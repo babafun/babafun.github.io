@@ -136,7 +136,7 @@ footer {
     position: fixed;
     width: 100%;
     bottom: 0;
-    border-top: 1px solid rgba(129, 212, 250, 0.1);
+    border-top: 0.5px solid rgba(20, 20, 20, 0.1);
 }
 
 footer p {
@@ -197,4 +197,12 @@ footer p {
     section h2 {
         font-size: 1.6rem;
     }
+}
+
+.container {
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox, Safari 18.2+, Chromium 121+ */
+}
+.container::-webkit-scrollbar { 
+    display: none;  /* Older Safari and Chromium */
 }
