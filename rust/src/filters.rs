@@ -1,6 +1,14 @@
 use wasm_bindgen::prelude::*;
 use crate::validation::{Song, ReleaseType};
 use regex::Regex;
+use lazy_static::lazy_static;
+
+// Compile regexes once at startup for better performance
+lazy_static! {
+    static ref CC_BY_REGEX: Regex = Regex::new(r"^CC BY( \d+\.\d+)?$").unwrap();
+    static ref CC_BY_SA_REGEX: Regex = Regex::new(r"^CC BY-SA( \d+\.\d+)?$").unwrap();
+    static ref CC0_REGEX: Regex = Regex::new(r"^CC0( \d+\.\d+)?$").unwrap();
+}
 
 /// Checks if license is a commercial Creative Commons license
 /// Matches: CC BY, CC BY-SA, CC0 (with optional version numbers)
@@ -8,23 +16,10 @@ use regex::Regex;
 pub fn is_commercial_cc_license(license: &str) -> bool {
     let license_upper = license.to_uppercase().trim().to_string();
     
-    // Match CC BY, CC BY-SA, CC0 with optional version numbers
-    // Examples: "CC BY", "CC BY 4.0", "CC BY-SA", "CC BY-SA 4.0", "CC0", "CC0 1.0"
-    let patterns = [
-        r"^CC BY( \d+\.\d+)?$",
-        r"^CC BY-SA( \d+\.\d+)?$",
-        r"^CC0( \d+\.\d+)?$",
-    ];
-    
-    for pattern in &patterns {
-        if let Ok(re) = Regex::new(pattern) {
-            if re.is_match(&license_upper) {
-                return true;
-            }
-        }
-    }
-    
-    false
+    // Use pre-compiled regexes for better performance
+    CC_BY_REGEX.is_match(&license_upper) ||
+    CC_BY_SA_REGEX.is_match(&license_upper) ||
+    CC0_REGEX.is_match(&license_upper)
 }
 
 /// Checks if license is BGML-P (Babafun Game Music License - Permissive)
@@ -34,6 +29,21 @@ pub fn is_bgml_p_license(license: &str) -> bool {
 }
 
 /// Checks if a song is creator-friendly
+/// A song is creator-friendly if ANY of these conditions are true:
+/// 1. Has a commercial CC license (CC BY, CC BY-SA, CC0)
+/// 2. Is an NCS release
+/// 3. Has BGML-P license
+#[wasm_bindgen]
+pub fn is_creator_friendly_song(song_json: &str) -> bool {
+    let song: Song = match serde_json::from_str(song_json) {
+        Ok(s) => s,
+        Err(_) => return false,
+    };
+    
+    is_creator_friendly(&song)
+}
+
+/// Internal function to check if a song is creator-friendly
 /// A song is creator-friendly if ANY of these conditions are true:
 /// 1. Has a commercial CC license (CC BY, CC BY-SA, CC0)
 /// 2. Is an NCS release

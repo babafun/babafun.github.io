@@ -1,0 +1,202 @@
+{
+  "songs": [
+    {
+      "id": "song-001",
+      "title": "Digital Dreams",
+      "albumName": "Synthwave Chronicles",
+      "releaseType": "Independent",
+      "hasContentId": false,
+      "streamingLink": "https://push.fm/digital-dreams",
+      "license": "CC BY 4.0",
+      "releaseYear": 2023,
+      "albumArtwork": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=400&fit=crop&crop=center"
+    },
+    {
+      "id": "song-002",
+      "title": "Neon Nights",
+      "albumName": "Synthwave Chronicles",
+      "releaseType": "Independent",
+      "hasContentId": true,
+      "streamingLink": "https://push.fm/neon-nights",
+      "license": "All Rights Reserved",
+      "releaseYear": 2023,
+      "albumArtwork": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=400&fit=crop&crop=center"
+    },
+    {
+      "id": "song-003",
+      "title": "Cyber City",
+      "albumName": "Synthwave Chronicles",
+      "releaseType": "Independent",
+      "hasContentId": false,
+      "streamingLink": "https://push.fm/cyber-city",
+      "license": "CC BY-SA 4.0",
+      "releaseYear": 2023,
+      "albumArtwork": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=400&fit=crop&crop=center"
+    },
+    {
+      "id": "song-004",
+      "title": "Electric Pulse",
+      "albumName": "Electronic Fusion",
+      "releaseType": "NCS",
+      "hasContentId": false,
+      "streamingLink": "https://ncs.io/electric-pulse",
+      "license": "",
+      "releaseYear": 2024,
+      "albumArtwork": "https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=400&h=400&fit=crop&crop=center"
+    },
+    {
+      "id": "song-005",
+      "title": "Bass Drop Revolution",
+      "albumName": "Electronic Fusion",
+      "releaseType": "NCS",
+      "hasContentId": false,
+      "streamingLink": "https://ncs.io/bass-drop-revolution",
+      "license": "",
+      "releaseYear": 2024,
+      "albumArtwork": "https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=400&h=400&fit=crop&crop=center"
+    },
+    {
+      "id": "song-006",
+      "title": "Melodic Waves",
+      "albumName": "Electronic Fusion",
+      "releaseType": "Monstercat",
+      "hasContentId": true,
+      "streamingLink": "https://monstercat.com/melodic-waves",
+      "license": "All Rights Reserved",
+      "releaseYear": 2024,
+      "albumArtwork": "https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=400&h=400&fit=crop&crop=center"
+    },
+    {
+      "id": "song-007",
+      "title": "Ambient Journey",
+      "albumName": "Atmospheric Sounds",
+      "releaseType": "Independent",
+      "hasContentId": false,
+      "streamingLink": "https://push.fm/ambient-journey",
+      "license": "CC0 1.0",
+      "releaseYear": 2022,
+      "albumArtwork": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop&crop=center"
+    },
+    {
+      "id": "song-008",
+      "title": "Space Exploration",
+      "albumName": "Atmospheric Sounds",
+      "releaseType": "Independent",
+      "hasContentId": false,
+      "streamingLink": "https://push.fm/space-exploration",
+      "license": "BGML-P",
+      "releaseYear": 2022,
+      "albumArtwork": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop&crop=center"
+    },
+    {
+      "id": "song-009",
+      "title": "Cosmic Drift",
+      "albumName": "Atmospheric Sounds",
+      "releaseType": "Independent",
+      "hasContentId": true,
+      "streamingLink": "https://push.fm/cosmic-drift",
+      "license": "",
+      "releaseYear": 2022,
+      "albumArtwork": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop&crop=center"
+    },
+    {
+      "id": "song-010",
+      "title": "Thunder Strike",
+      "albumName": "High Energy",
+      "releaseType": "Monstercat",
+      "hasContentId": true,
+      "streamingLink": "https://monstercat.com/thunder-strike",
+      "license": "All Rights Reserved",
+      "releaseYear": 2024,
+      "albumArtwork": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&h=400&fit=crop&crop=center"
+    },
+    {
+      "id": "song-011",
+      "title": "Lightning Fast",
+      "albumName": "High Energy",
+      "releaseType": "NCS",
+      "hasContentId": false,
+      "streamingLink": "https://ncs.io/lightning-fast",
+      "license": "",
+      "releaseYear": 2024,
+      "albumArtwork": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&h=400&fit=crop&crop=center"
+    },
+    {
+      "id": "song-012",
+      "title": "Power Surge",
+      "albumName": "High Energy",
+      "releaseType": "Independent",
+      "hasContentId": false,
+      "streamingLink": "https://push.fm/power-surge",
+      "license": "CC BY 3.0",
+      "releaseYear": 2024,
+      "albumArtwork": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&h=400&fit=crop&crop=center"
+    },
+    {
+      "id": "song-013",
+      "title": "Chill Vibes",
+      "albumName": "Relaxation Station",
+      "releaseType": "Independent",
+      "hasContentId": false,
+      "streamingLink": "https://push.fm/chill-vibes",
+      "license": "CC BY-SA 3.0",
+      "releaseYear": 2021,
+      "albumArtwork": "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=400&h=400&fit=crop&crop=center"
+    },
+    {
+      "id": "song-014",
+      "title": "Peaceful Moments",
+      "albumName": "Relaxation Station",
+      "releaseType": "Independent",
+      "hasContentId": true,
+      "streamingLink": "https://push.fm/peaceful-moments",
+      "license": "All Rights Reserved",
+      "releaseYear": 2021,
+      "albumArtwork": "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=400&h=400&fit=crop&crop=center"
+    },
+    {
+      "id": "song-015",
+      "title": "Serenity Now",
+      "albumName": "Relaxation Station",
+      "releaseType": "NCS",
+      "hasContentId": false,
+      "streamingLink": "https://ncs.io/serenity-now",
+      "license": "",
+      "releaseYear": 2021,
+      "albumArtwork": "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=400&h=400&fit=crop&crop=center"
+    },
+    {
+      "id": "song-016",
+      "title": "Game Over",
+      "albumName": "8-Bit Adventures",
+      "releaseType": "Independent",
+      "hasContentId": false,
+      "streamingLink": "https://push.fm/game-over",
+      "license": "BGML-P",
+      "releaseYear": 2023,
+      "albumArtwork": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=400&fit=crop&crop=center"
+    },
+    {
+      "id": "song-017",
+      "title": "Pixel Perfect",
+      "albumName": "8-Bit Adventures",
+      "releaseType": "Independent",
+      "hasContentId": false,
+      "streamingLink": "https://push.fm/pixel-perfect",
+      "license": "CC0",
+      "releaseYear": 2023,
+      "albumArtwork": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=400&fit=crop&crop=center"
+    },
+    {
+      "id": "song-018",
+      "title": "Boss Battle",
+      "albumName": "8-Bit Adventures",
+      "releaseType": "Monstercat",
+      "hasContentId": true,
+      "streamingLink": "https://monstercat.com/boss-battle",
+      "license": "All Rights Reserved",
+      "releaseYear": 2023,
+      "albumArtwork": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=400&fit=crop&crop=center"
+    }
+  ]
+}

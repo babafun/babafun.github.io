@@ -2,13 +2,18 @@
 
 ## Introduction
 
-This document specifies the requirements for a music portfolio website that displays a musician's discography with multiple viewing modes and creator-friendly filtering. The system manages music data through JSON files and provides a responsive, accessible interface with a custom purple color scheme.
+This document specifies the requirements for a multi-section music portfolio website for "babafun" that displays a musician's discography with routing, search functionality, and creator-friendly filtering. The system manages music data through JSON files and provides a responsive, accessible interface with an interactive gradient background and purple-to-blue color scheme.
 
 ## Glossary
 
-- **System**: The music portfolio website application
-- **Music_Data_Store**: JSON file containing song and album information
-- **Discography_View**: Display mode showing songs organized by albums
+- **System**: The music portfolio website application with multi-section routing
+- **Music_Data_Store**: JSON file containing song and album information with artwork URLs
+- **Navbar**: Top navigation component with HOME, MUSIC, CODE, LICENSES sections
+- **Music_Homepage**: Landing page for music section with discography access
+- **Discography_Page**: Display showing albums with artwork in full-width layout
+- **Album_Page**: Individual album view showing all songs with routing
+- **Song_Page**: Individual song detail page with complete information
+- **Search_Page**: Advanced search and filtering interface
 - **Song_Detail_View**: Display mode showing complete information for individual songs
 - **Creator_List_View**: Filtered display showing only songs free for creators to use
 - **Content_ID**: YouTube's Content ID system that can claim revenue on videos using the music
@@ -18,8 +23,11 @@ This document specifies the requirements for a music portfolio website that disp
 - **NCS_Release**: No Copyright Sounds release (free for creators)
 - **BGML_P_License**: Babafun Game Music License (the Babafun Game Music licenses will be part of a different section of the website) - Permissive variant
 - **Streaming_Link**: URL to music streaming platforms for the song
-- **Color_Scheme**: CSS custom properties defining the visual theme
+- **Album_Artwork**: URL to album cover image for visual display
+- **Color_Scheme**: CSS custom properties defining the visual theme with purple-to-blue gradients
+- **Interactive_Background**: Animated gradient background with mouse-following spotlight effect
 - **UI_Component**: React component for dynamic content rendering
+- **Router**: React Router system for navigation between pages
 
 ## Requirements
 
@@ -37,31 +45,69 @@ This document specifies the requirements for a music portfolio website that disp
 
 ### Requirement 2: Music Data Management
 
-**User Story:** As a content manager, I want to store music data in a simple JSON file, so that I can easily update my discography without database complexity.
+**User Story:** As a content manager, I want to store music data in a simple JSON file with album artwork, so that I can easily update my discography without database complexity.
 
 #### Acceptance Criteria
 
 1. THE Music_Data_Store SHALL be a JSON file containing all song and album information
-2. WHEN a song entry is created, THE Music_Data_Store SHALL include album name, release type, Content ID status, streaming link, and license fields
+2. WHEN a song entry is created, THE Music_Data_Store SHALL include album name, release type, Content ID status, streaming link, license, release year, and album artwork URL fields
 3. THE Music_Data_Store SHALL support three release types: Independent, NCS, and Monstercat
 4. THE Music_Data_Store SHALL store Content ID status as a boolean value
 5. THE Music_Data_Store SHALL allow license field to be an empty string
-6. THE System SHALL load and parse the Music_Data_Store at application startup
-7. THE System SHALL validate the structure of the Music_Data_Store on load
+6. THE Music_Data_Store SHALL include release year for sorting functionality
+7. THE Music_Data_Store SHALL include album artwork URLs for visual display
+8. THE System SHALL load and parse the Music_Data_Store at application startup
+9. THE System SHALL validate the structure of the Music_Data_Store on load
 
-### Requirement 3: Discography View
+### Requirement 3: Multi-Section Website Structure
 
-**User Story:** As a visitor, I want to browse music organized by albums, so that I can explore the artist's work chronologically or by collection.
+**User Story:** As a visitor, I want to navigate between different sections (HOME, MUSIC, CODE, LICENSES), so that I can explore both the musician's work and development projects.
 
 #### Acceptance Criteria
 
-1. THE Discography_View SHALL display songs grouped by album name
-2. WHEN displaying albums, THE Discography_View SHALL show all songs within each album
-3. THE Discography_View SHALL display album names as section headers
-4. THE Discography_View SHALL maintain consistent styling with the Color_Scheme
-5. WHEN an album contains multiple songs, THE Discography_View SHALL list them in a readable format
+1. THE System SHALL implement a prominent top navigation bar with HOME, MUSIC, CODE, LICENSES options
+2. THE System SHALL use React Router for client-side routing between sections
+3. THE System SHALL organize all music-related content under /music/ routes
+4. THE System SHALL display "babafun" as the site brand name
+5. THE System SHALL display "stuff about me" as the tagline
+6. THE System SHALL provide a HOME page with general information
+7. THE System SHALL provide a CODE page showcasing development work
+8. THE System SHALL provide a LICENSES page with legal information
+9. THE Navbar SHALL be visible on all pages for consistent navigation
 
-### Requirement 4: Song Detail View
+### Requirement 4: Music Section Structure
+
+**User Story:** As a visitor, I want to browse music through a structured hierarchy (homepage → discography → albums → songs), so that I can easily discover and explore the artist's work.
+
+#### Acceptance Criteria
+
+1. THE Music_Homepage SHALL be accessible at /music/ route
+2. THE Music_Homepage SHALL display placeholder text and a "View Discography" button
+3. THE Discography_Page SHALL be accessible at /music/discography route
+4. THE Discography_Page SHALL display all albums with artwork in a full-width layout
+5. THE Album_Page SHALL be accessible at /music/a/[album-id] routes
+6. THE Album_Page SHALL display all songs within the selected album
+7. THE Song_Page SHALL be accessible at /music/s/[song-id] routes using actual song IDs
+8. THE Song_Page SHALL display complete information for the selected song
+9. THE System SHALL maintain consistent navigation between all music pages
+
+### Requirement 5: Search and Filtering System
+
+**User Story:** As a visitor, I want to search and filter songs by various criteria, so that I can quickly find music that meets my specific needs.
+
+#### Acceptance Criteria
+
+1. THE Search_Page SHALL be accessible from all music pages via a search button
+2. THE Search_Page SHALL provide text search functionality across song titles
+3. THE Search_Page SHALL provide multi-select filtering by release label
+4. THE Search_Page SHALL provide multi-select filtering by license type
+5. THE Search_Page SHALL provide a toggle for creator-friendly songs only
+6. THE Search_Page SHALL provide sorting options by title and release year
+7. THE Search_Page SHALL display results in real-time as filters are applied
+8. THE Search_Page SHALL show album artwork for each result
+9. THE Search_Page SHALL link to individual song pages using song IDs
+
+### Requirement 6: Song Detail Display
 
 **User Story:** As a visitor, I want to see complete information about each song, so that I can understand its release details and access streaming platforms.
 
@@ -71,11 +117,13 @@ This document specifies the requirements for a music portfolio website that disp
 2. THE Song_Detail_View SHALL display the song's release type
 3. THE Song_Detail_View SHALL display the song's Content ID status
 4. THE Song_Detail_View SHALL display the song's streaming link as a clickable element
-5. WHEN a song has a non-empty license field, THE Song_Detail_View SHALL display the license information
-6. WHEN a song has an empty license field, THE Song_Detail_View SHALL omit the license from display
-7. THE Song_Detail_View SHALL format all information in a clear, readable layout
+5. THE Song_Detail_View SHALL display the song's release year
+6. THE Song_Detail_View SHALL display the album artwork
+7. WHEN a song has a non-empty license field, THE Song_Detail_View SHALL display the license information
+8. WHEN a song has an empty license field, THE Song_Detail_View SHALL omit the license from display
+9. THE Song_Detail_View SHALL format all information in a clear, readable layout
 
-### Requirement 5: Creator-Friendly List
+### Requirement 7: Creator-Friendly List
 
 **User Story:** As a content creator, I want to see which songs I can use in my videos, so that I can find music without copyright concerns.
 
@@ -88,22 +136,28 @@ This document specifies the requirements for a music portfolio website that disp
 5. THE Creator_List_View SHALL exclude songs that do not meet the creator-friendly criteria
 6. THE Creator_List_View SHALL display the same song information as Song_Detail_View for included songs
 
-### Requirement 6: Visual Styling
+### Requirement 8: Visual Styling and Interactive Design
 
-**User Story:** As a visitor, I want the website to have a cohesive purple color scheme, so that I experience a visually appealing and branded interface.
+**User Story:** As a visitor, I want the website to have an engaging interactive design with purple-to-blue gradients and enhanced typography, so that I experience a visually appealing and modern interface.
 
 #### Acceptance Criteria
 
-1. THE System SHALL implement the Color_Scheme using CSS custom properties
-2. THE Color_Scheme SHALL support both dark mode and light mode variants
-3. THE Color_Scheme SHALL use oklch color space with hsl fallbacks for browser compatibility
-4. THE System SHALL define colors for background (dark, normal, light), text (normal, muted), borders (normal, muted), and semantic colors (primary, secondary, danger, warning, success, info)
-5. WHEN the light mode is active, THE System SHALL apply the light mode Color_Scheme values
-6. THE System SHALL apply the Color_Scheme consistently across all UI_Components
-7. THE System SHALL use the primary purple color as the main theme color
-8. THE System SHALL use the secondary green color for accent elements
+1. THE System SHALL implement an Interactive_Background with animated gradients
+2. THE Interactive_Background SHALL follow mouse movement with a spotlight effect
+3. THE Color_Scheme SHALL use purple-to-blue gradients instead of purple-to-yellow-green
+4. THE Color_Scheme SHALL use clownfish orange (#FF8C33) for hover states
+5. THE System SHALL implement the Color_Scheme using CSS custom properties
+6. THE System SHALL support both dark mode and light mode variants
+7. THE System SHALL use multiple Google Fonts for enhanced typography:
+   - Orbitron for titles and headings
+   - Space Grotesk for secondary headings
+   - Inter for body text
+8. THE System SHALL apply glassmorphism effects with shadows and highlights
+9. THE System SHALL provide smooth hover animations throughout the interface
+10. THE System SHALL use full-width layouts instead of boxed/centered content
+11. THE System SHALL apply the Color_Scheme consistently across all UI_Components
 
-### Requirement 7: Privacy and Contact Information
+### Requirement 9: Privacy and Contact Information
 
 **User Story:** As a site owner who is a minor, I want all contact sections hidden, so that my privacy is protected.
 
@@ -115,7 +169,7 @@ This document specifies the requirements for a music portfolio website that disp
 4. THE System SHALL not display any direct messaging interfaces
 5. WHEN rendering pages, THE System SHALL omit all contact-related UI_Components
 
-### Requirement 8: Responsive Design
+### Requirement 10: Responsive Design
 
 **User Story:** As a visitor on any device, I want the website to work well on my screen size, so that I can browse music comfortably.
 
@@ -126,8 +180,9 @@ This document specifies the requirements for a music portfolio website that disp
 3. THE System SHALL render correctly on desktop devices (1024px and above width)
 4. WHEN the viewport size changes, THE System SHALL adapt the layout appropriately
 5. THE System SHALL maintain readability at all supported screen sizes
+6. THE System SHALL use full-width layouts that utilize the entire browser width
 
-### Requirement 9: Accessibility
+### Requirement 11: Accessibility
 
 **User Story:** As a visitor using assistive technology, I want the website to be accessible, so that I can navigate and understand the content.
 
@@ -140,7 +195,7 @@ This document specifies the requirements for a music portfolio website that disp
 5. WHEN displaying links, THE System SHALL provide clear link text or aria-labels
 6. THE System SHALL provide alternative text for any images or icons
 
-### Requirement 10: Performance
+### Requirement 12: Performance
 
 **User Story:** As a visitor, I want the website to load quickly, so that I can access music information without delay.
 

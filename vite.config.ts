@@ -20,15 +20,13 @@ export default defineConfig({
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom'],
-          // Note: Uncomment when WASM bindings are created in Phase 2
-          // 'wasm-core': ['./src/wasm/bindings'],
+          'wasm-core': ['./src/wasm/bindings'],
         },
       },
     },
   },
   optimizeDeps: {
-    // Note: Uncomment when WASM bindings are created in Phase 2
-    // exclude: ['./src/wasm/bindings'], // Don't pre-bundle WASM
+    exclude: ['./src/wasm/bindings'], // Don't pre-bundle WASM
   },
   test: {
     globals: true,

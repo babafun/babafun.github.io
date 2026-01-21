@@ -2,9 +2,9 @@
 
 ## Overview
 
-The music portfolio website is a single-page application built with TypeScript, Vite, and React that displays a musician's discography through multiple viewing modes. The system uses a JSON-based data store for music information and provides three distinct views: a discography organized by albums, detailed per-song information, and a creator-friendly filtered list.
+The music portfolio website is a multi-section application built with TypeScript, Vite, React, and React Router that displays "babafun's" music portfolio through structured navigation and advanced search capabilities. The system uses a JSON-based data store for music information with album artwork and provides multiple pages: a music homepage, discography view, individual album and song pages, and an advanced search interface.
 
-The architecture emphasizes simplicity and maintainability by using file-based data storage, minimal React usage (only for dynamic content), and a clean separation between data models, business logic, and presentation layers.
+The architecture emphasizes modern web design with an interactive gradient background, enhanced typography using multiple Google Fonts, and a purple-to-blue color scheme with clownfish orange hover states. The site uses full-width layouts and glassmorphism effects for a contemporary feel.
 
 ## Architecture
 
@@ -14,22 +14,35 @@ The architecture emphasizes simplicity and maintainability by using file-based d
 music-portfolio/
 ├── src/
 │   ├── data/
-│   │   └── music.json           # Music data store
+│   │   └── music.json           # Music data store with artwork URLs
 │   ├── types/
 │   │   └── music.ts              # TypeScript interfaces
 │   ├── wasm/
 │   │   └── bindings.ts           # WASM module bindings
 │   ├── utils/
 │   │   ├── dataLoader.ts         # JSON loading (TS wrapper)
-│   │   └── theme.ts              # Theme switching utilities
+│   │   ├── filters.ts            # Filtering utilities
+│   │   ├── display.ts            # Display utilities
+│   │   └── colorContrast.ts      # Color contrast calculations
 │   ├── components/
+│   │   ├── Navbar.tsx            # Top navigation bar
 │   │   ├── DiscographyView.tsx   # Album-organized view
 │   │   ├── SongDetailView.tsx    # Individual song details
-│   │   └── CreatorListView.tsx   # Creator-friendly filtered list
+│   │   ├── CreatorListView.tsx   # Creator-friendly filtered list
+│   │   └── ViewSelector.tsx      # View navigation component
+│   ├── pages/
+│   │   ├── HomePage.tsx          # Main landing page
+│   │   ├── MusicHomePage.tsx     # Music section landing
+│   │   ├── DiscographyPage.tsx   # Albums listing page
+│   │   ├── AlbumPage.tsx         # Individual album page
+│   │   ├── SongPage.tsx          # Individual song page
+│   │   ├── SearchPage.tsx        # Advanced search interface
+│   │   ├── CodePage.tsx          # Development portfolio
+│   │   └── LicensesPage.tsx      # Legal information
 │   ├── styles/
 │   │   ├── colors.css            # Color scheme variables
-│   │   └── main.css              # Global styles
-│   ├── App.tsx                   # Main application component
+│   │   └── main.css              # Global styles with interactive background
+│   ├── App.tsx                   # Main application with routing
 │   └── main.tsx                  # Application entry point
 ├── rust/
 │   ├── src/
@@ -38,7 +51,7 @@ music-portfolio/
 │   │   ├── filters.rs            # Creator-friendly filtering
 │   │   └── grouping.rs           # Album grouping logic
 │   └── Cargo.toml                # Rust dependencies
-├── index.html
+├── index.html                    # HTML entry with Google Fonts
 ├── package.json
 ├── tsconfig.json
 └── vite.config.ts
@@ -47,21 +60,25 @@ music-portfolio/
 ### Technology Stack
 
 - **TypeScript**: Type-safe development with compile-time error checking, DOM manipulation
+- **React**: Component-based UI with hooks for state management
+- **React Router**: Client-side routing for multi-page navigation
 - **Rust + WebAssembly**: Performance-critical operations (validation, filtering, batch processing)
 - **Vite**: Fast development server and optimized production builds with minification
-- **React**: Minimal usage for dynamic view rendering and state management
-- **CSS Custom Properties**: Theme system with dark/light mode support
-- **JSON**: Simple file-based data storage
+- **Google Fonts**: Enhanced typography (Orbitron, Space Grotesk, Inter)
+- **CSS Custom Properties**: Theme system with interactive gradients and glassmorphism
+- **JSON**: Simple file-based data storage with album artwork URLs
 
 ### Design Principles
 
-1. **Simplicity First**: Use JSON files instead of databases, minimize dependencies
-2. **Type Safety**: Leverage TypeScript for data validation and IDE support
-3. **Minimal React**: Use React only where dynamic rendering is needed
-4. **Performance First**: Use Rust/WASM for batch operations, validation, and filtering
-5. **Clear Separation**: TypeScript for DOM, Rust for computation
-6. **Accessibility**: Semantic HTML, ARIA labels, keyboard navigation
-7. **Optimized Delivery**: Minified bundles for fast downloads
+1. **Multi-Section Architecture**: Clear separation between HOME, MUSIC, CODE, LICENSES sections
+2. **Structured Navigation**: Hierarchical music browsing (homepage → discography → albums → songs)
+3. **Advanced Search**: Comprehensive filtering and sorting capabilities
+4. **Visual Excellence**: Interactive backgrounds, enhanced typography, glassmorphism effects
+5. **Full-Width Design**: Utilize entire browser width instead of boxed layouts
+6. **Type Safety**: Leverage TypeScript for data validation and IDE support
+7. **Performance First**: Use Rust/WASM for batch operations, validation, and filtering
+8. **Accessibility**: Semantic HTML, ARIA labels, keyboard navigation
+9. **Modern Aesthetics**: Purple-to-blue gradients, clownfish orange hover states
 
 ## Components and Interfaces
 
@@ -71,13 +88,15 @@ music-portfolio/
 
 ```typescript
 interface Song {
-  id: string;                    // Unique identifier
+  id: string;                    // Unique identifier for routing
   title: string;                 // Song title
   albumName: string;             // Album this song belongs to
   releaseType: ReleaseType;      // Independent, NCS, or Monstercat
   hasContentId: boolean;         // Whether song has Content ID
   streamingLink: string;         // URL to streaming platform
   license: string;               // License type (can be empty string)
+  releaseYear: number;           // Year of release for sorting
+  albumArtwork: string;          // URL to album cover image
 }
 
 type ReleaseType = 'Independent' | 'NCS' | 'Monstercat';
@@ -214,23 +233,116 @@ export function isBGMLPLicense(license: string): boolean {
 // App.tsx
 interface AppProps {}
 
-interface AppState {
-  musicData: MusicData | null;
-  currentView: 'discography' | 'songs' | 'creator';
-  loading: boolean;
-  error: string | null;
-}
-
 /**
- * Main application component
- * - Loads music data on mount
- * - Manages view state
- * - Renders appropriate view component
+ * Main application component with React Router
+ * - Sets up routing for all pages
+ * - Provides consistent layout with Navbar
+ * - Handles global state and theme
  */
 function App(): JSX.Element
 ```
 
-#### DiscographyView Component
+#### Navbar Component
+
+```typescript
+// Navbar.tsx
+interface NavbarProps {}
+
+/**
+ * Top navigation bar component
+ * - Displays "babafun" brand and "stuff about me" tagline
+ * - Provides navigation to HOME, MUSIC, CODE, LICENSES
+ * - Highlights active section
+ * - Responsive design for mobile/desktop
+ */
+function Navbar(): JSX.Element
+```
+
+#### Page Components
+
+```typescript
+// HomePage.tsx
+/**
+ * Main landing page
+ * - Welcome message and site overview
+ * - Links to main sections
+ */
+function HomePage(): JSX.Element
+
+// MusicHomePage.tsx
+/**
+ * Music section landing page
+ * - Music-focused welcome content
+ * - "View Discography" button
+ * - Search access
+ */
+function MusicHomePage(): JSX.Element
+
+// DiscographyPage.tsx
+/**
+ * Albums listing page
+ * - Displays all albums with artwork
+ * - Full-width layout
+ * - Links to individual album pages
+ */
+function DiscographyPage(): JSX.Element
+
+// AlbumPage.tsx
+interface AlbumPageProps {
+  albumId: string; // From URL params
+}
+
+/**
+ * Individual album page
+ * - Shows all songs in the album
+ * - Album artwork display
+ * - Links to individual song pages using song IDs
+ */
+function AlbumPage(props: AlbumPageProps): JSX.Element
+
+// SongPage.tsx
+interface SongPageProps {
+  songId: string; // From URL params
+}
+
+/**
+ * Individual song page
+ * - Complete song information
+ * - Album artwork
+ * - Streaming links
+ * - License information
+ */
+function SongPage(props: SongPageProps): JSX.Element
+
+// SearchPage.tsx
+/**
+ * Advanced search and filtering interface
+ * - Text search across song titles
+ * - Multi-select filters (release label, license)
+ * - Creator-friendly toggle
+ * - Sorting options (title, year)
+ * - Real-time results with artwork
+ */
+function SearchPage(): JSX.Element
+
+// CodePage.tsx
+/**
+ * Development portfolio page
+ * - Showcases programming projects
+ * - Links to repositories
+ */
+function CodePage(): JSX.Element
+
+// LicensesPage.tsx
+/**
+ * Legal information page
+ * - License details
+ * - Terms of use
+ */
+function LicensesPage(): JSX.Element
+```
+
+#### View Components
 
 ```typescript
 // DiscographyView.tsx
@@ -239,34 +351,27 @@ interface DiscographyViewProps {
 }
 
 /**
- * Displays songs organized by albums
- * - Renders album sections with headers
- * - Lists songs under each album
- * - Applies consistent styling
+ * Displays albums with artwork in full-width layout
+ * - Album artwork display
+ * - Album titles and metadata
+ * - Links to album pages
  */
 function DiscographyView(props: DiscographyViewProps): JSX.Element
-```
 
-#### SongDetailView Component
-
-```typescript
 // SongDetailView.tsx
 interface SongDetailViewProps {
   songs: Song[];
 }
 
 /**
- * Displays detailed information for each song
- * - Shows all song metadata
- * - Conditionally displays license (only if non-empty)
- * - Renders streaming links as clickable elements
+ * Displays detailed information for songs
+ * - Album artwork
+ * - All song metadata
+ * - Conditional license display
+ * - Streaming links
  */
 function SongDetailView(props: SongDetailViewProps): JSX.Element
-```
 
-#### CreatorListView Component
-
-```typescript
 // CreatorListView.tsx
 interface CreatorListViewProps {
   songs: Song[];
@@ -274,36 +379,18 @@ interface CreatorListViewProps {
 
 /**
  * Displays filtered list of creator-friendly songs
- * - Filters songs using filterCreatorFriendly utility
- * - Displays same information as SongDetailView
- * - Highlights creator-friendly status
+ * - Filters using filterCreatorFriendly utility
+ * - Album artwork display
+ * - Creator-friendly badges
  */
 function CreatorListView(props: CreatorListViewProps): JSX.Element
-```
-
-### View Navigation
-
-```typescript
-// ViewSelector component or navigation logic
-interface ViewSelectorProps {
-  currentView: string;
-  onViewChange: (view: 'discography' | 'songs' | 'creator') => void;
-}
-
-/**
- * Navigation component for switching between views
- * - Provides buttons/tabs for each view
- * - Highlights active view
- * - Accessible keyboard navigation
- */
-function ViewSelector(props: ViewSelectorProps): JSX.Element
 ```
 
 ## Data Models
 
 ### JSON Data Structure
 
-The `music.json` file follows this structure:
+The `music.json` file follows this structure with album artwork:
 
 ```json
 {
@@ -315,7 +402,9 @@ The `music.json` file follows this structure:
       "releaseType": "Independent",
       "hasContentId": false,
       "streamingLink": "https://push.fm/song",
-      "license": "CC BY 4.0"
+      "license": "CC BY 4.0",
+      "releaseYear": 2023,
+      "albumArtwork": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f"
     },
     {
       "id": "song-002",
@@ -324,7 +413,9 @@ The `music.json` file follows this structure:
       "releaseType": "NCS",
       "hasContentId": false,
       "streamingLink": "https://example.com/song2",
-      "license": ""
+      "license": "",
+      "releaseYear": 2024,
+      "albumArtwork": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f"
     }
   ]
 }
@@ -332,12 +423,14 @@ The `music.json` file follows this structure:
 
 ### Validation Rules
 
-1. **Required Fields**: All fields in Song interface must be present
+1. **Required Fields**: All fields in Song interface must be present (including releaseYear and albumArtwork)
 2. **Release Type**: Must be one of: 'Independent', 'NCS', 'Monstercat'
 3. **Content ID**: Must be boolean (true/false)
 4. **Streaming Link**: Must be valid URL string
 5. **License**: Can be empty string, but field must exist
-6. **ID**: Must be unique across all songs
+6. **ID**: Must be unique across all songs for routing
+7. **Release Year**: Must be valid 4-digit year
+8. **Album Artwork**: Must be valid URL string
 
 ### Creator-Friendly Criteria
 
@@ -365,143 +458,220 @@ const CC_COMMERCIAL_PATTERNS = [
 const BGML_P_PATTERN = /^BGML-P$/i;
 ```
 
-## Color Scheme Implementation
+## Color Scheme and Visual Design
 
-### CSS Custom Properties
+### Interactive Background
 
-The color scheme is implemented using CSS custom properties with two-tier fallback:
-
-1. **Primary**: oklch color space (modern browsers)
-2. **Fallback**: hsl color space (older browsers)
-
-### Color Variables
-
-#### Dark Mode (Default)
-
-The music portfolio uses a purple-themed dark mode color scheme:
+The website features an animated gradient background with mouse-following spotlight effect:
 
 ```css
-:root {
-  /* hsl (fallback color) */
-  --bg-dark: hsl(265 100% 4%);
-  --bg: hsl(271 100% 7%);
-  --bg-light: hsl(271 73% 11%);
-  --text: hsl(266 100% 100%);
-  --text-muted: hsl(266 57% 77%);
-  --highlight: hsl(270 43% 47%);
-  --border: hsl(272 57% 35%);
-  --border-muted: hsl(276 100% 21%);
-  --primary: hsl(268 100% 80%);
-  --secondary: hsl(77 51% 50%);
-  --danger: hsl(8 84% 66%);
-  --warning: hsl(54 100% 27%);
-  --success: hsl(160 100% 35%);
-  --info: hsl(217 100% 69%);
-  
-  /* oklch */
-  --bg-dark: oklch(0.1 0.08 304);
-  --bg: oklch(0.15 0.08 304);
-  --bg-light: oklch(0.2 0.08 304);
-  --text: oklch(0.96 0.1 304);
-  --text-muted: oklch(0.76 0.1 304);
-  --highlight: oklch(0.5 0.16 304);
-  --border: oklch(0.4 0.16 304);
-  --border-muted: oklch(0.3 0.16 304);
-  --primary: oklch(0.76 0.16 304);
-  --secondary: oklch(0.76 0.16 124);
-  --danger: oklch(0.7 0.16 30);
-  --warning: oklch(0.7 0.16 100);
-  --success: oklch(0.7 0.16 160);
-  --info: oklch(0.7 0.16 260);
+/* Interactive gradient background */
+body {
+  background: linear-gradient(135deg, 
+    hsl(270, 100%, 15%) 0%,
+    hsl(260, 100%, 10%) 25%,
+    hsl(250, 100%, 8%) 50%,
+    hsl(240, 100%, 12%) 75%,
+    hsl(270, 100%, 15%) 100%
+  );
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+}
+
+/* Mouse-following spotlight effect */
+.spotlight {
+  position: fixed;
+  pointer-events: none;
+  background: radial-gradient(circle, 
+    rgba(255, 255, 255, 0.1) 0%, 
+    transparent 70%
+  );
+  transition: transform 0.1s ease;
 }
 ```
 
-**Color Breakdown:**
-- **Background**: Three shades of deep purple (dark, normal, light) for depth
-- **Text**: Bright purple-white for readability, muted purple for secondary text
-- **Highlight**: Mid-tone purple for hover states
-- **Borders**: Purple borders in two intensities for subtle separation
-- **Primary**: Bright purple (oklch 0.76 0.16 304) - main theme color
-- **Secondary**: Yellow-green (oklch 0.76 0.16 124) - accent color
-- **Semantic Colors**: Danger (red), warning (yellow), success (green), info (blue)
+### Typography System
 
-#### Light Mode (Optional)
+Multiple Google Fonts for enhanced visual hierarchy:
 
-Light mode is not required for the initial implementation but can be added later by inverting brightness while maintaining the purple hue. Applied via `body.light` class with same variable names for easy switching.
+```css
+/* Font imports in index.html */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
-### Theme Switching (Optional)
+/* Typography hierarchy */
+h1, .title { font-family: 'Orbitron', monospace; }
+h2, h3, .heading { font-family: 'Space Grotesk', sans-serif; }
+body, p, .body-text { font-family: 'Inter', sans-serif; }
+```
 
-Light mode is optional for the initial implementation. If implemented later:
+### Color Variables
 
-```typescript
-// Theme management utility
-function toggleTheme(): void {
-  document.body.classList.toggle('light');
-  localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
+#### Updated Color Scheme (Purple-to-Blue with Clownfish Orange)
+
+The music portfolio uses a purple-to-blue gradient theme with clownfish orange hover states:
+
+```css
+:root {
+  /* Base colors - purple to blue gradients */
+  --bg-dark: hsl(270, 100%, 4%);
+  --bg: hsl(260, 100%, 7%);
+  --bg-light: hsl(250, 73%, 11%);
+  --text: hsl(240, 100%, 100%);
+  --text-muted: hsl(240, 57%, 77%);
+  --highlight: hsl(245, 43%, 47%);
+  --border: hsl(245, 57%, 35%);
+  --border-muted: hsl(250, 100%, 21%);
+  
+  /* Theme colors */
+  --primary: hsl(245, 100%, 80%);      /* Purple-blue primary */
+  --secondary: hsl(210, 100%, 60%);    /* Blue secondary */
+  --accent: hsl(25, 100%, 60%);        /* Clownfish orange for hovers */
+  
+  /* Semantic colors */
+  --danger: hsl(8, 84%, 66%);
+  --warning: hsl(54, 100%, 27%);
+  --success: hsl(160, 100%, 35%);
+  --info: hsl(217, 100%, 69%);
+  
+  /* Modern browser overrides with oklch */
+  --bg-dark: oklch(0.1 0.08 270);
+  --bg: oklch(0.15 0.08 260);
+  --bg-light: oklch(0.2 0.08 250);
+  --text: oklch(0.96 0.1 240);
+  --text-muted: oklch(0.76 0.1 240);
+  --highlight: oklch(0.5 0.16 245);
+  --border: oklch(0.4 0.16 245);
+  --border-muted: oklch(0.3 0.16 250);
+  --primary: oklch(0.76 0.16 245);
+  --secondary: oklch(0.76 0.16 210);
+  --accent: oklch(0.7 0.16 25);        /* Clownfish orange */
+}
+```
+
+**Key Changes from Original:**
+- **Gradients**: Purple-to-blue instead of purple-to-yellow-green
+- **Hover States**: Clownfish orange (#FF8C33 / hsl(25 100% 60%)) for all hover effects
+- **Secondary Color**: Blue instead of yellow-green
+- **Consistent Hue Progression**: 270° → 260° → 250° → 245° → 240° for smooth gradient
+
+### Glassmorphism Effects
+
+Modern glassmorphism styling throughout the interface:
+
+```css
+/* Glassmorphism cards */
+.glass-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
-function loadTheme(): void {
-  const savedTheme = localStorage.getItem('theme');
-  if (savedTheme === 'light') {
-    document.body.classList.add('light');
-  }
+/* Enhanced hover effects */
+.glass-card:hover {
+  background: rgba(255, 140, 51, 0.1); /* Clownfish orange tint */
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(255, 140, 51, 0.3);
+}
+```
+
+### Full-Width Layout System
+
+```css
+/* Full-width containers */
+.full-width {
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  padding: 0 2rem;
+}
+
+/* Album and song listings */
+.album-grid, .song-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  width: 100%;
+  max-width: none; /* Remove center constraints */
 }
 ```
 
 ### Applying Colors
 
-Components use CSS custom properties directly:
+Components use the updated color scheme with clownfish orange hover states:
 
 ```css
-/* Base layout */
+/* Base layout with interactive background */
 body {
-  background-color: var(--bg);
+  background: var(--bg);
   color: var(--text);
+  /* Interactive gradient background applied */
 }
 
-/* Song cards */
-.song-card {
-  background-color: var(--bg-light);
-  color: var(--text);
+/* Navigation */
+.navbar {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.navbar a:hover {
+  color: var(--accent); /* Clownfish orange */
+}
+
+/* Album and song cards */
+.album-card, .song-card {
+  background: var(--bg-light);
   border: 1px solid var(--border);
+  /* Glassmorphism effects applied */
 }
 
-.song-card:hover {
-  background-color: var(--highlight);
-  border-color: var(--primary);
+.album-card:hover, .song-card:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  /* Enhanced hover animations */
 }
 
-/* Links */
+/* Links and buttons */
 .streaming-link {
   color: var(--primary);
 }
 
 .streaming-link:hover {
-  color: var(--secondary);
+  color: var(--accent); /* Clownfish orange */
 }
 
-/* Badges */
-.creator-badge {
-  background-color: var(--success);
+/* Search and filter controls */
+.search-input {
+  background: var(--bg-light);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.filter-button.active {
+  background: var(--primary);
   color: var(--bg-dark);
 }
 
-/* Navigation */
-.view-selector button {
-  color: var(--text-muted);
-  border: 1px solid var(--border-muted);
+.filter-button:hover {
+  background: var(--accent);
+  color: var(--bg-dark);
 }
 
-.view-selector button.active {
-  color: var(--primary);
-  border-color: var(--primary);
-  background-color: var(--bg-light);
+/* Creator-friendly badges */
+.creator-badge {
+  background: var(--success);
+  color: var(--bg-dark);
 }
 
-/* Album headers */
-.album-header {
-  color: var(--primary);
-  border-bottom: 2px solid var(--border);
+/* Album artwork */
+.album-artwork {
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 ```
 

@@ -116,7 +116,8 @@ export const songArbitrary: fc.Arbitrary<Song> = fc.record({
   releaseType: releaseTypeArbitrary,
   hasContentId: fc.boolean(),
   streamingLink: streamingLinkArbitrary,
-  license: licenseArbitrary
+  license: licenseArbitrary,
+  releaseYear: fc.integer({ min: 2020, max: 2024 })
 });
 
 /**
@@ -208,7 +209,8 @@ export const creatorFriendlySongArbitrary: fc.Arbitrary<Song> = fc.record({
     fc.constant('CC0'),
     fc.constant('BGML-P'),           // BGML-P license
     licenseArbitrary                 // Mix in other licenses for variety
-  )
+  ),
+  releaseYear: fc.integer({ min: 2020, max: 2024 })
 });
 
 /**
@@ -231,7 +233,8 @@ export const nonCreatorFriendlySongArbitrary: fc.Arbitrary<Song> = fc.record({
       !s.match(/^CC0/i) && 
       s !== 'BGML-P'
     )
-  )
+  ),
+  releaseYear: fc.integer({ min: 2020, max: 2024 })
 });
 
 /**

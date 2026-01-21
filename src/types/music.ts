@@ -33,6 +33,12 @@ export interface Song {
   
   /** License information (can be empty string) */
   license: string;
+  
+  /** Year the song was released */
+  releaseYear: number;
+  
+  /** Album artwork URL (optional) */
+  albumArtwork?: string;
 }
 
 /**

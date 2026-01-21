@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataLoader Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+        .demo-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #333;
+            border-radius: 5px;
+            background-color: #2a2a2a;
+        }
+        button {
+            background-color: #6b46c1;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #553c9a;
+        }
+        button:disabled {
+            background-color: #666;
+            cursor: not-allowed;
+        }
+        .output {
+            background-color: #1a1a1a;
+            border: 1px solid #444;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 3px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .error {
+            color: #ff6b6b;
+        }
+        .success {
+            color: #51cf66;
+        }
+    </style>
+</head>
+<body>
+    <h1>DataLoader Demo</h1>
+    <p>This demo shows the DataLoader functionality. Make sure to run <code>npm run dev</code> first to start the development server.</p>
+    
+    <div class="demo-section">
+        <h2>Basic Usage</h2>
+        <button onclick="testBasicUsage()">Load Music Data</button>
+        <div id="basic-output" class="output"></div>
+    </div>
+    
+    <div class="demo-section">
+        <h2>Singleton Pattern</h2>
+        <button onclick="testSingleton()">Test Singleton</button>
+        <div id="singleton-output" class="output"></div>
+    </div>
+    
+    <div class="demo-section">
+        <h2>Data Validation</h2>
+        <button onclick="testValidation()">Test Validation</button>
+        <div id="validation-output" class="output"></div>
+    </div>
+    
+    <div class="demo-section">
+        <h2>Album Grouping</h2>
+        <button onclick="testGrouping()">Test Album Grouping</button>
+        <div id="grouping-output" class="output"></div>
+    </div>
+    
+    <div class="demo-section">
+        <h2>Error Handling</h2>
+        <button onclick="testErrorHandling()">Test Error Handling</button>
+        <div id="error-output" class="output"></div>
+    </div>
+
+    <script type="module">
+        import { DataLoader, loadMusicData } from './src/utils/dataLoader.js';
+        
+        // Make functions available globally for onclick handlers
+        window.testBasicUsage = async function() {
+            const output = document.getElementById('basic-output');
+            output.textContent = 'Loading...';
+            
+            try {
+                const musicData = await loadMusicData();
+                output.innerHTML = `<span class="success">✓ Success!</span>
+Loaded ${musicData.songs.length} songs
+Organized into ${musicData.albums.length} albums
+
+First few songs:
+${musicData.songs.slice(0, 3).map(song => 
+    `- ${song.title} (${song.albumName}) - ${song.releaseType}`
+).join('\n')}
+
+Albums:
+${musicData.albums.map(album => 
+    `- ${album.name}: ${album.songs.length} songs`
+).join('\n')}`;
+            } catch (error) {
+                output.innerHTML = `<span class="error">✗ Error:</span> ${error.message}`;
+            }
+        };
+        
+        window.testSingleton = async function() {
+            const output = document.getElementById('singleton-output');
+            
+            try {
+                const loader1 = DataLoader.getInstance();
+                const loader2 = DataLoader.getInstance();
+                
+                output.innerHTML = `<span class="success">✓ Success!</span>
+Singleton test: ${loader1 === loader2 ? 'PASS' : 'FAIL'}
+WASM ready: ${loader1.isWasmReady()}`;
+            } catch (error) {
+                output.innerHTML = `<span class="error">✗ Error:</span> ${error.message}`;
+            }
+        };
+        
+        window.testValidation = async function() {
+            const output = document.getElementById('validation-output');
+            output.textContent = 'Testing validation...';
+            
+            try {
+                const loader = DataLoader.getInstance();
+                
+                // Test valid data
+                const validData = JSON.stringify({
+                    songs: [{
+                        id: "test-001",
+                        title: "Test Song",
+                        albumName: "Test Album",
+                        releaseType: "Independent",
+                        hasContentId: false,
+                        streamingLink: "https://example.com/test",
+                        license: "CC BY 4.0"
+                    }]
+                });
+                
+                const isValid = await loader.validateRawData(validData);
+                
+                output.innerHTML = `<span class="success">✓ Success!</span>
+Valid data validation: ${isValid ? 'PASS' : 'FAIL'}`;
+                
+            } catch (error) {
+                output.innerHTML = `<span class="error">✗ Error:</span> ${error.message}`;
+            }
+        };
+        
+        window.testGrouping = async function() {
+            const output = document.getElementById('grouping-output');
+            output.textContent = 'Testing album grouping...';
+            
+            try {
+                const loader = DataLoader.getInstance();
+                
+                const testSongs = [
+                    {
+                        id: "song-1",
+                        title: "Song 1",
+                        albumName: "Album A",
+                        releaseType: "Independent",
+                        hasContentId: false,
+                        streamingLink: "https://example.com/1",
+                        license: "CC BY 4.0"
+                    },
+                    {
+                        id: "song-2",
+                        title: "Song 2",
+                        albumName: "Album A",
+                        releaseType: "NCS",
+                        hasContentId: false,
+                        streamingLink: "https://example.com/2",
+                        license: ""
+                    },
+                    {
+                        id: "song-3",
+                        title: "Song 3",
+                        albumName: "Album B",
+                        releaseType: "Monstercat",
+                        hasContentId: true,
+                        streamingLink: "https://example.com/3",
+                        license: "All Rights Reserved"
+                    }
+                ];
+                
+                const albums = await loader.groupSongsByAlbum(testSongs);
+                
+                output.innerHTML = `<span class="success">✓ Success!</span>
+Grouped ${testSongs.length} songs into ${albums.length} albums:
+
+${albums.map(album => 
+    `${album.name}: ${album.songs.length} songs
+  ${album.songs.map(song => `- ${song.title}`).join('\n  ')}`
+).join('\n\n')}`;
+                
+            } catch (error) {
+                output.innerHTML = `<span class="error">✗ Error:</span> ${error.message}`;
+            }
+        };
+        
+        window.testErrorHandling = async function() {
+            const output = document.getElementById('error-output');
+            output.textContent = 'Testing error handling...';
+            
+            try {
+                const loader = DataLoader.getInstance();
+                
+                // Test with invalid path
+                await loader.loadMusicData('/nonexistent/path.json');
+                
+                output.innerHTML = `<span class="error">✗ Unexpected:</span> Should have thrown an error`;
+                
+            } catch (error) {
+                output.innerHTML = `<span class="success">✓ Success!</span>
+Error handling works correctly:
+${error.name}: ${error.message}`;
+            }
+        };
+    </script>
+</body>
+</html>

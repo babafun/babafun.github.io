@@ -1,0 +1,147 @@
+/* Music Portfolio Color Scheme
+ * Purple-themed dark mode with HSL fallbacks and OKLCH overrides
+ * Validates Requirements 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7, 6.8
+ */
+
+:root {
+  /* HSL Fallback Colors (for older browsers) */
+  
+  /* Background Colors - Deep purple shades for depth */
+  --bg-dark: hsl(265 100% 4%);      /* Darkest background */
+  --bg: hsl(271 100% 7%);           /* Main background */
+  --bg-light: hsl(271 73% 11%);     /* Light background for cards */
+  
+  /* RGB values for backdrop-filter compatibility */
+  --bg-dark-rgb: 15, 10, 25;
+  --bg-rgb: 20, 15, 35;
+  --bg-light-rgb: 30, 25, 45;
+  --primary-rgb: 168, 85, 247;
+  --secondary-rgb: 51, 102, 255;
+  --accent-rgb: 255, 140, 51;
+  --border-rgb: 100, 100, 100;
+  --success-rgb: 34, 197, 94;
+  
+  /* Text Colors - Purple-white for readability */
+  --text: hsl(266 100% 100%);       /* Primary text - bright purple-white */
+  --text-muted: hsl(266 57% 77%);   /* Secondary text - muted purple */
+  
+  /* Interactive Colors */
+  --highlight: hsl(270 43% 47%);    /* Hover states and highlights */
+  
+  /* Border Colors - Purple borders for subtle separation */
+  --border: hsl(272 57% 35%);       /* Primary borders */
+  --border-muted: hsl(276 100% 21%); /* Subtle borders */
+  
+  /* Theme Colors */
+  --primary: hsl(268 100% 80%);     /* Bright purple - main theme color */
+  --secondary: hsl(220 100% 70%);   /* Blue - harmonious with purple */
+  --accent: hsl(25 100% 60%);       /* Clownfish orange for hover states */
+  
+  /* Semantic Colors */
+  --danger: hsl(8 84% 66%);         /* Red for errors/warnings */
+  --warning: hsl(54 100% 27%);      /* Yellow for warnings */
+  --success: hsl(160 100% 35%);     /* Green for success states */
+  --info: hsl(217 100% 69%);        /* Blue for informational content */
+  
+  /* OKLCH Color Space Overrides (for modern browsers) */
+  /* These provide better color consistency and perceptual uniformity */
+  
+  /* Background Colors */
+  --bg-dark: oklch(0.1 0.08 304);   /* Deep purple background */
+  --bg: oklch(0.15 0.08 304);       /* Main purple background */
+  --bg-light: oklch(0.2 0.08 304);  /* Light purple background */
+  
+  /* Text Colors */
+  --text: oklch(0.96 0.1 304);      /* Bright purple-white text */
+  --text-muted: oklch(0.76 0.1 304); /* Muted purple text */
+  
+  /* Interactive Colors */
+  --highlight: oklch(0.5 0.16 304); /* Purple highlight */
+  
+  /* Border Colors */
+  --border: oklch(0.4 0.16 304);    /* Purple border */
+  --border-muted: oklch(0.3 0.16 304); /* Muted purple border */
+  
+  /* Theme Colors */
+  --primary: oklch(0.76 0.16 304);  /* Bright purple primary */
+  --secondary: oklch(0.76 0.16 250); /* Blue secondary - harmonious with purple */
+  --accent: oklch(0.70 0.20 45);    /* Clownfish orange for hover states */
+  
+  /* Semantic Colors */
+  --danger: oklch(0.7 0.16 30);     /* Red danger */
+  --warning: oklch(0.7 0.16 100);   /* Yellow warning */
+  --success: oklch(0.7 0.16 160);   /* Green success */
+  --info: oklch(0.7 0.16 260);      /* Blue info */
+}
+
+/* Light Mode (Optional - for future implementation)
+ * Applied via body.light class for easy theme switching
+ */
+body.light {
+  /* HSL Fallback Colors for Light Mode */
+  --bg-dark: hsl(266 100% 96%);     /* Light background */
+  --bg: hsl(271 100% 93%);          /* Main light background */
+  --bg-light: hsl(271 73% 89%);     /* Darker light background */
+  
+  --text: hsl(266 100% 10%);        /* Dark text */
+  --text-muted: hsl(266 57% 40%);   /* Muted dark text */
+  
+  --highlight: hsl(270 43% 60%);    /* Light mode highlight */
+  
+  --border: hsl(272 57% 70%);       /* Light borders */
+  --border-muted: hsl(276 100% 80%); /* Subtle light borders */
+  
+  --primary: hsl(268 100% 30%);     /* Dark purple primary */
+  --secondary: hsl(77 51% 40%);     /* Darker yellow-green */
+  
+  /* Semantic colors remain similar but adjusted for light backgrounds */
+  --danger: hsl(8 84% 50%);
+  --warning: hsl(54 100% 35%);
+  --success: hsl(160 100% 30%);
+  --info: hsl(217 100% 50%);
+  
+  /* OKLCH Overrides for Light Mode */
+  --bg-dark: oklch(0.9 0.08 304);
+  --bg: oklch(0.85 0.08 304);
+  --bg-light: oklch(0.8 0.08 304);
+  
+  --text: oklch(0.2 0.1 304);
+  --text-muted: oklch(0.4 0.1 304);
+  
+  --highlight: oklch(0.6 0.16 304);
+  
+  --border: oklch(0.7 0.16 304);
+  --border-muted: oklch(0.8 0.16 304);
+  
+  --primary: oklch(0.4 0.16 304);
+  --secondary: oklch(0.4 0.16 124);
+  
+  --danger: oklch(0.5 0.16 30);
+  --warning: oklch(0.5 0.16 100);
+  --success: oklch(0.5 0.16 160);
+  --info: oklch(0.5 0.16 260);
+}
+
+/* Color Usage Examples and Guidelines
+ * 
+ * Base Layout:
+ * body { background-color: var(--bg); color: var(--text); }
+ * 
+ * Cards/Components:
+ * .card { background-color: var(--bg-light); border: 1px solid var(--border); }
+ * .card:hover { background-color: var(--highlight); }
+ * 
+ * Links:
+ * a { color: var(--primary); }
+ * a:hover { color: var(--secondary); }
+ * 
+ * Navigation:
+ * .nav-button { color: var(--text-muted); border: 1px solid var(--border-muted); }
+ * .nav-button.active { color: var(--primary); border-color: var(--primary); }
+ * 
+ * Status Indicators:
+ * .creator-friendly { background-color: var(--success); }
+ * .content-id-warning { color: var(--warning); }
+ * .error-message { color: var(--danger); }
+ * .info-text { color: var(--info); }
+ */
