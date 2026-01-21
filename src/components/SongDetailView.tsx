@@ -14,6 +14,7 @@
 
 import React from 'react';
 import type { Song } from '../types/music';
+import { shouldDisplayLicense } from '../utils/display';
 
 /**
  * Props interface for SongDetailView component
@@ -31,14 +32,6 @@ interface SongDetailCardProps {
 }
 
 const SongDetailCard: React.FC<SongDetailCardProps> = ({ song }) => {
-  /**
-   * Determines if license should be displayed
-   * License is displayed only if it's not an empty string
-   */
-  const shouldDisplayLicense = (license: string): boolean => {
-    return license.trim() !== '';
-  };
-
   /**
    * Determines if a song is creator-friendly based on license and release type
    */

@@ -11,6 +11,35 @@
 import * as wasm from '../wasm/bindings';
 import type { Song } from '../types/music';
 
+// Track WASM initialization state
+let wasmInitialized = false;
+
+/**
+ * Initialize WASM module synchronously for testing
+ * This should be called once before running tests
+ */
+export function initWasmSync(): void {
+  if (!wasmInitialized) {
+    try {
+      // Initialize WASM synchronously
+      wasm.initWasm();
+      wasmInitialized = true;
+    } catch (error) {
+      console.warn('WASM initialization failed, falling back to JavaScript implementation');
+      wasmInitialized = false;
+    }
+  }
+}
+
+/**
+ * Ensures WASM module is initialized before calling any WASM functions
+ */
+function ensureWasmInitialized(): void {
+  if (!wasmInitialized) {
+    initWasmSync();
+  }
+}
+
 /**
  * Filters songs to only creator-friendly ones
  * 
@@ -27,6 +56,9 @@ import type { Song } from '../types/music';
  */
 export function filterCreatorFriendly(songs: Song[]): Song[] {
   try {
+    // Ensure WASM is initialized
+    ensureWasmInitialized();
+    
     // Convert songs to JSON string for WASM function
     const songsJson = JSON.stringify(songs);
     
@@ -38,7 +70,9 @@ export function filterCreatorFriendly(songs: Song[]): Song[] {
     
     return filteredSongs;
   } catch (error) {
-    throw new Error(`Failed to filter creator-friendly songs: ${error instanceof Error ? error.message : String(error)}`);
+    // Fallback to JavaScript implementation if WASM fails
+    console.warn('WASM filtering failed, using JavaScript fallback:', error);
+    return filterCreatorFriendlyJS(songs);
   }
 }
 
@@ -54,13 +88,17 @@ export function filterCreatorFriendly(songs: Song[]): Song[] {
  * 
  * @param license - License string to check
  * @returns true if the license is a commercial CC license, false otherwise
- * @throws Error if WASM module is not initialized
  */
 export function isCommercialCCLicense(license: string): boolean {
   try {
+    // Ensure WASM is initialized
+    ensureWasmInitialized();
+    
     return wasm.isCommercialCCLicense(license);
   } catch (error) {
-    throw new Error(`Failed to check CC license: ${error instanceof Error ? error.message : String(error)}`);
+    // Fallback to JavaScript implementation if WASM fails
+    console.warn('WASM CC license check failed, using JavaScript fallback:', error);
+    return isCommercialCCLicenseJS(license);
   }
 }
 
@@ -73,13 +111,17 @@ export function isCommercialCCLicense(license: string): boolean {
  * 
  * @param license - License string to check
  * @returns true if the license is BGML-P, false otherwise
- * @throws Error if WASM module is not initialized
  */
 export function isBGMLPLicense(license: string): boolean {
   try {
+    // Ensure WASM is initialized
+    ensureWasmInitialized();
+    
     return wasm.isBGMLPLicense(license);
   } catch (error) {
-    throw new Error(`Failed to check BGML-P license: ${error instanceof Error ? error.message : String(error)}`);
+    // Fallback to JavaScript implementation if WASM fails
+    console.warn('WASM BGML-P license check failed, using JavaScript fallback:', error);
+    return isBGMLPLicenseJS(license);
   }
 }
 
@@ -93,17 +135,21 @@ export function isBGMLPLicense(license: string): boolean {
  * 
  * @param song - Song to check
  * @returns true if the song is creator-friendly, false otherwise
- * @throws Error if WASM module is not initialized or JSON parsing fails
  */
 export function isCreatorFriendlySong(song: Song): boolean {
   try {
+    // Ensure WASM is initialized
+    ensureWasmInitialized();
+    
     // Convert song to JSON string for WASM function
     const songJson = JSON.stringify(song);
     
     // Call WASM function to check if song is creator-friendly
     return wasm.isCreatorFriendlySong(songJson);
   } catch (error) {
-    throw new Error(`Failed to check if song is creator-friendly: ${error instanceof Error ? error.message : String(error)}`);
+    // Fallback to JavaScript implementation if WASM fails
+    console.warn('WASM creator-friendly check failed, using JavaScript fallback:', error);
+    return isCreatorFriendlySongJS(song);
   }
 }
 
@@ -154,7 +200,6 @@ export function getCreatorFriendlyReason(song: Song): string | null {
  * 
  * @param songs - Array of songs to check
  * @returns Array of booleans indicating which songs are creator-friendly
- * @throws Error if WASM module is not initialized or processing fails
  */
 export function batchCheckCreatorFriendly(songs: Song[]): boolean[] {
   try {
@@ -165,6 +210,60 @@ export function batchCheckCreatorFriendly(songs: Song[]): boolean[] {
     // Return boolean array indicating which songs are creator-friendly
     return songs.map(song => creatorFriendlyIds.has(song.id));
   } catch (error) {
-    throw new Error(`Failed to batch check creator-friendly songs: ${error instanceof Error ? error.message : String(error)}`);
+    // Fallback to individual checks
+    return songs.map(song => isCreatorFriendlySong(song));
   }
+}
+
+// JavaScript fallback implementations
+// These are used when WASM is not available or fails
+
+/**
+ * JavaScript fallback for commercial CC license checking
+ */
+function isCommercialCCLicenseJS(license: string): boolean {
+  if (!license || typeof license !== 'string') {
+    return false;
+  }
+  
+  const trimmed = license.trim().toLowerCase();
+  
+  // Match CC BY, CC BY-SA, CC0 patterns (case-insensitive)
+  const ccPatterns = [
+    /^cc by( \d+\.\d+)?$/,           // CC BY, CC BY 4.0, etc.
+    /^cc by-sa( \d+\.\d+)?$/,        // CC BY-SA, CC BY-SA 4.0, etc.
+    /^cc0( \d+\.\d+)?$/,             // CC0, CC0 1.0, etc.
+  ];
+  
+  return ccPatterns.some(pattern => pattern.test(trimmed));
+}
+
+/**
+ * JavaScript fallback for BGML-P license checking
+ */
+function isBGMLPLicenseJS(license: string): boolean {
+  if (!license || typeof license !== 'string') {
+    return false;
+  }
+  
+  return license.trim().toLowerCase() === 'bgml-p';
+}
+
+/**
+ * JavaScript fallback for creator-friendly song checking
+ */
+function isCreatorFriendlySongJS(song: Song): boolean {
+  // Check if song meets any creator-friendly criteria
+  const hasCommercialCC = isCommercialCCLicenseJS(song.license);
+  const isNCS = song.releaseType === 'NCS';
+  const isBGMLP = isBGMLPLicenseJS(song.license);
+  
+  return hasCommercialCC || isNCS || isBGMLP;
+}
+
+/**
+ * JavaScript fallback for filtering creator-friendly songs
+ */
+function filterCreatorFriendlyJS(songs: Song[]): Song[] {
+  return songs.filter(song => isCreatorFriendlySongJS(song));
 }

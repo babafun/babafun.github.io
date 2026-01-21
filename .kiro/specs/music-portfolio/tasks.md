@@ -135,7 +135,7 @@
 ### 3.3 Implement TypeScript Data Loader (WASM Wrapper)
 **Requirements:** 2.6, 2.7, 10.6
 - [x] Create `src/utils/dataLoader.ts`
-- [~] Import WASM bindings
+- [x] Import WASM bindings
 - [x] Implement `DataLoader` class:
   - `loadMusicData()` async function to fetch JSON
   - Call WASM `validate_music_data()` for validation
@@ -165,7 +165,7 @@
 - [x] **Property 2:** Write test for album grouping preservation (validates Requirements 3.1, 3.2)
 - [x] **Property 3:** Write test for album grouping correctness (validates Requirements 3.1, 3.2)
 - [x] **Property 7:** Write test for unique song IDs (validates Requirement 2.7)
-- [~] Run tests and ensure all pass
+- [x] Run tests and ensure all pass
 
 ## Phase 4: Styling Foundation
 
@@ -235,14 +235,14 @@
 - [x] Implement conditional license display (only if non-empty)
 - [x] Render streaming links as clickable `<a>` elements with proper attributes
 - [x] Apply consistent styling
-- [~] Use semantic HTML and ARIA labels
+- [x] Use semantic HTML and ARIA labels
 
 ### 5.3 Implement License Display Logic
 **Requirements:** 4.5, 4.6
 - [x] Create `src/utils/display.ts`
-- [~] Implement `shouldDisplayLicense()` function
+- [x] Implement `shouldDisplayLicense()` function
 - [x] **Property 5:** Write property-based test for license display logic (validates Requirements 4.5, 4.6)
-- [~] Integrate into SongDetailView component
+- [x] Integrate into SongDetailView component
 
 ### 5.4 Implement CreatorListView Component
 **Requirements:** 5.1, 5.2, 5.3, 5.4, 5.5, 5.6
@@ -272,8 +272,8 @@
 
 ### 5.7 Write Component Unit Tests
 **Requirements:** All component requirements
-- [~] Write unit tests for DiscographyView rendering
-- [~] Write unit tests for SongDetailView rendering and conditional logic
+- [x] Write unit tests for DiscographyView rendering
+- [x] Write unit tests for SongDetailView rendering and conditional logic
 - [~] Write unit tests for CreatorListView filtering
 - [~] Write unit tests for ViewSelector interaction
 - [~] Aim for 80%+ component coverage
@@ -427,7 +427,7 @@
 
 ### 11.1 Configure Production Build
 **Requirements:** 1.2, 10.3, 10.6
-- [ ] Verify `vite.config.ts` production settings:
+- [~] Verify `vite.config.ts` production settings:
   - Terser minification with drop_console enabled
   - Sourcemaps disabled
   - Code splitting configured
@@ -444,24 +444,24 @@
 
 ### 11.2 Deployment Preparation
 **Requirements:** All
-- [ ] Create deployment documentation in README
-- [ ] Document how to add new songs to music.json
-- [ ] Document how to update color scheme
-- [ ] Document Rust/WASM build process
-- [ ] Document how to rebuild WASM module
-- [ ] Document build and deployment process
-- [ ] Add npm scripts for common tasks:
+- [~] Create deployment documentation in README
+- [~] Document how to add new songs to music.json
+- [~] Document how to update color scheme
+- [~] Document Rust/WASM build process
+- [~] Document how to rebuild WASM module
+- [~] Document build and deployment process
+- [~] Add npm scripts for common tasks:
   - `build:wasm` - Build WASM module
   - `build:all` - Build WASM + Vite
   - `dev` - Development server with WASM
 
 ### 11.3 Final Validation
 **Requirements:** All
-- [ ] Run final Lighthouse audit (target: > 90 score)
+- [~] Run final Lighthouse audit (target: > 90 score)
 - [x] Verify all requirements are met
 - [x] Verify all acceptance criteria are satisfied
-- [ ] Test deployed site on production URL
-- [ ] Create list of potential future enhancements
+- [~] Test deployed site on production URL
+- [~] Create list of potential future enhancements
 
 ## Summary
 

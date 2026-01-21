@@ -16,9 +16,10 @@ import {
   filterCreatorFriendly,
   isCommercialCCLicense,
   isBGMLPLicense,
-  batchCheckCreatorFriendly
+  batchCheckCreatorFriendly,
+  isCreatorFriendlySong
 } from '../utils/filters';
-import { isCreatorFriendlySong } from '../utils/display';
+import { songArbitrary, uniqueSongsArbitrary } from '../../test/arbitraries';
 import type { Song, ReleaseType } from '../types/music';
 
 // Custom arbitraries for testing
@@ -241,7 +242,7 @@ describe('Filter Logic Property Tests', () => {
   describe('Batch Operations', () => {
     it('should batch check creator-friendly status correctly', () => {
       fc.assert(fc.property(
-        fc.array(songArbitrary, { minLength: 1, maxLength: 10 }),
+        uniqueSongsArbitrary(1, 10),
         (songs) => {
           const batchResults = batchCheckCreatorFriendly(songs);
           

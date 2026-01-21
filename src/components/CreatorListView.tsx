@@ -40,27 +40,40 @@ interface CreatorSongCardProps {
 
 const CreatorSongCard: React.FC<CreatorSongCardProps> = ({ song, reason }) => {
   return (
-    <article className="song-card creator-song-card" role="article">
+    <article 
+      className="song-card creator-song-card" 
+      role="article"
+      aria-labelledby={`song-title-${song.id}`}
+      aria-describedby={`song-details-${song.id}`}
+    >
       <header className="song-header">
-        <h3 className="song-title mb-1">{song.title}</h3>
+        <h3 id={`song-title-${song.id}`} className="song-title mb-1">{song.title}</h3>
         <p className="song-album text-muted">
           from <em>{song.albumName}</em>
         </p>
         
         <div className="creator-status mt-1">
-          <span className="badge creator-friendly" title={reason}>
-            ✓ Creator Friendly
+          <span 
+            className="badge creator-friendly" 
+            title={reason}
+            aria-label={`Creator friendly: ${reason}`}
+            role="status"
+          >
+            <span aria-hidden="true">✓</span> Creator Friendly
           </span>
-          <span className="creator-reason text-muted ml-1">
+          <span className="creator-reason text-muted ml-1" aria-hidden="true">
             {reason}
           </span>
         </div>
       </header>
 
-      <div className="song-metadata mt-2">
+      <div id={`song-details-${song.id}`} className="song-metadata mt-2">
         <div className="metadata-row">
           <strong>Release Type:</strong>
-          <span className={`badge ${song.releaseType.toLowerCase()} ml-1`}>
+          <span 
+            className={`badge ${song.releaseType.toLowerCase()} ml-1`}
+            aria-label={`Release type: ${song.releaseType}`}
+          >
             {song.releaseType}
           </span>
         </div>
@@ -73,6 +86,11 @@ const CreatorSongCard: React.FC<CreatorSongCardProps> = ({ song, reason }) => {
               ? 'This song has YouTube Content ID enabled but is still creator-friendly'
               : 'This song does not have YouTube Content ID'
             }
+            aria-label={`Content ID ${song.hasContentId ? 'enabled' : 'disabled'}: ${
+              song.hasContentId 
+                ? 'This song has YouTube Content ID enabled but is still creator-friendly'
+                : 'This song does not have YouTube Content ID'
+            }`}
           >
             {song.hasContentId ? 'Enabled' : 'Disabled'}
           </span>
@@ -81,7 +99,9 @@ const CreatorSongCard: React.FC<CreatorSongCardProps> = ({ song, reason }) => {
         {shouldDisplayLicense(song.license) && (
           <div className="metadata-row mt-1">
             <strong>License:</strong>
-            <span className="song-license ml-1">{song.license}</span>
+            <span className="song-license ml-1" aria-label={`License: ${song.license}`}>
+              {song.license}
+            </span>
           </div>
         )}
       </div>
@@ -92,9 +112,10 @@ const CreatorSongCard: React.FC<CreatorSongCardProps> = ({ song, reason }) => {
           target="_blank"
           rel="noopener noreferrer"
           className="streaming-link"
-          aria-label={`Listen to ${song.title} - creator-friendly music`}
+          aria-label={`Listen to ${song.title} on streaming platform - creator-friendly music (opens in new tab)`}
         >
           {getStreamingLinkText(song.streamingLink)}
+          <span aria-hidden="true"> ↗</span>
         </a>
       </footer>
     </article>
@@ -110,12 +131,12 @@ const EmptyCreatorState: React.FC = () => (
     <p className="text-muted">
       There are currently no songs available that are free for creators to use.
     </p>
-    <div className="creator-criteria mt-2">
-      <h3 className="text-muted">Songs are considered creator-friendly if they have:</h3>
-      <ul className="text-muted">
-        <li>NCS (No Copyright Sounds) release</li>
-        <li>Creative Commons license (CC BY, CC BY-SA, CC0)</li>
-        <li>BGML-P (Babafun Game Music License - Permissive)</li>
+    <div className="creator-criteria mt-2" role="region" aria-labelledby="criteria-heading">
+      <h3 id="criteria-heading" className="text-muted">Songs are considered creator-friendly if they have:</h3>
+      <ul className="text-muted" role="list">
+        <li role="listitem">NCS (No Copyright Sounds) release</li>
+        <li role="listitem">Creative Commons license (CC BY, CC BY-SA, CC0)</li>
+        <li role="listitem">BGML-P (Babafun Game Music License - Permissive)</li>
       </ul>
     </div>
   </div>
@@ -143,18 +164,22 @@ const CreatorStats: React.FC<CreatorStatsProps> = ({ totalSongs, creatorFriendly
     <div className="creator-stats mb-3" role="region" aria-labelledby="creator-stats-heading">
       <h2 id="creator-stats-heading" className="sr-only">Creator-Friendly Statistics</h2>
       <div className="stats-summary text-center">
-        <p className="text-muted">
+        <p className="text-muted" aria-label={`${creatorFriendlySongs.length} of ${totalSongs} songs are creator-friendly, which is ${percentage} percent`}>
           <strong>{creatorFriendlySongs.length}</strong> of <strong>{totalSongs}</strong> songs 
           are creator-friendly ({percentage}%)
         </p>
         
         {creatorFriendlySongs.length > 0 && (
-          <div className="stats-breakdown mt-1">
+          <div className="stats-breakdown mt-1" role="group" aria-label="Breakdown by license type">
             {ncsCount > 0 && (
-              <span className="badge ncs mr-1">{ncsCount} NCS</span>
+              <span className="badge ncs mr-1" aria-label={`${ncsCount} NCS releases`}>
+                {ncsCount} NCS
+              </span>
             )}
             {ccCount > 0 && (
-              <span className="badge success mr-1">{ccCount} Open License</span>
+              <span className="badge success mr-1" aria-label={`${ccCount} open license songs`}>
+                {ccCount} Open License
+              </span>
             )}
           </div>
         )}
@@ -195,7 +220,8 @@ export const CreatorListView: React.FC<CreatorListViewProps> = ({ songs }) => {
   // Handle case where no creator-friendly songs exist
   if (creatorFriendlySongs.length === 0) {
     return (
-      <main className="creator-list-view" role="main">
+      <main className="creator-list-view" role="main" aria-labelledby="main-heading-empty">
+        <h1 id="main-heading-empty" className="sr-only">Creator-Friendly Music</h1>
         <CreatorStats totalSongs={songs.length} creatorFriendlySongs={creatorFriendlySongs} />
         <EmptyCreatorState />
       </main>
@@ -215,13 +241,13 @@ export const CreatorListView: React.FC<CreatorListViewProps> = ({ songs }) => {
   const groupTypes = Object.keys(songsByType).sort();
 
   return (
-    <main className="creator-list-view" role="main">
+    <main className="creator-list-view" role="main" aria-labelledby="main-heading">
       <header className="view-header mb-3">
-        <h1 className="sr-only">Creator-Friendly Music</h1>
+        <h1 id="main-heading" className="sr-only">Creator-Friendly Music</h1>
         <CreatorStats totalSongs={songs.length} creatorFriendlySongs={creatorFriendlySongs} />
         
         <div className="creator-info">
-          <p className="text-center text-muted">
+          <p className="text-center text-muted" role="note">
             These songs are free for creators to use in videos, streams, and other content.
           </p>
         </div>
@@ -247,7 +273,7 @@ export const CreatorListView: React.FC<CreatorListViewProps> = ({ songs }) => {
               </p>
             </header>
             
-            <div className="songs-grid">
+            <div className="songs-grid" role="group" aria-label={`${groupType} songs`}>
               {songsByType[groupType].map((song) => {
                 const reason = getCreatorFriendlyReason(song) || 'Creator-friendly';
                 return (
@@ -263,14 +289,14 @@ export const CreatorListView: React.FC<CreatorListViewProps> = ({ songs }) => {
         ))}
       </div>
 
-      <footer className="creator-disclaimer mt-3">
+      <footer className="creator-disclaimer mt-3" role="contentinfo">
         <div className="disclaimer-content">
           <h3 className="text-muted">Usage Guidelines</h3>
-          <ul className="text-muted">
-            <li>Always check the specific license terms before using</li>
-            <li>Some songs may still require attribution even if creator-friendly</li>
-            <li>Content ID status may affect monetization - check individual songs</li>
-            <li>When in doubt, contact the artist or label directly</li>
+          <ul className="text-muted" role="list">
+            <li role="listitem">Always check the specific license terms before using</li>
+            <li role="listitem">Some songs may still require attribution even if creator-friendly</li>
+            <li role="listitem">Content ID status may affect monetization - check individual songs</li>
+            <li role="listitem">When in doubt, contact the artist or label directly</li>
           </ul>
         </div>
       </footer>

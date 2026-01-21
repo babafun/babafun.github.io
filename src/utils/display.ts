@@ -136,8 +136,9 @@ export function shouldDisplayStreamingLink(streamingLink: string): boolean {
   }
   
   try {
-    new URL(streamingLink);
-    return true;
+    const url = new URL(streamingLink);
+    // Only allow http and https protocols for security
+    return url.protocol === 'http:' || url.protocol === 'https:';
   } catch {
     return false;
   }
