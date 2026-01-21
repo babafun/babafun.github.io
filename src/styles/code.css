@@ -1,0 +1,156 @@
+/* Code Section Styles
+ * Specific styling for code-related pages
+ */
+
+.code-page {
+  background: transparent;
+}
+
+.code-hero {
+  padding: 4rem 1rem;
+  text-align: centre;
+  background: rgba(var(--bg-light-rgb, 30, 25, 45), 0.4);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+
+.code-hero h1 {
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, var(--info), var(--primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.code-hero p {
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.projects-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4rem 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+}
+
+.project-card {
+  background: rgba(var(--bg-light-rgb, 30, 25, 45), 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2rem;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.project-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(51, 102, 255, 0.1), rgba(255, 140, 51, 0.1));
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.project-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--info);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 20px rgba(51, 102, 255, 0.2);
+}
+
+.project-card:hover::before {
+  opacity: 1;
+}
+
+.project-title {
+  font-size: 1.5rem;
+  color: var(--info);
+  margin-bottom: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.project-description {
+  color: var(--text);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.project-tech {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.tech-tag {
+  background: rgba(var(--info-rgb, 51, 102, 255), 0.2);
+  color: var(--info);
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border: 1px solid rgba(var(--info-rgb, 51, 102, 255), 0.3);
+}
+
+.project-links {
+  display: flex;
+  gap: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.project-link {
+  color: var(--info);
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.project-link:hover {
+  color: var(--accent);
+  text-shadow: 0 2px 8px rgba(255, 140, 51, 0.3);
+}
+
+/* Code syntax highlighting placeholder */
+.code-block {
+  background: rgba(var(--bg-dark-rgb, 15, 10, 25), 0.8);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.code-block code {
+  color: var(--text);
+}
+
+/* Responsive adjustments for code pages */
+@media (max-width: 767px) {
+  .code-hero h1 {
+    font-size: 2.5rem;
+  }
+  
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
+}

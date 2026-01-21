@@ -2,6 +2,10 @@ import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import './styles/main.css';
+import './styles/music.css';
+import './styles/home.css';
+import './styles/code.css';
+import './styles/search.css';
 
 // Mouse tracking for interactive gradient
 let mouseX = 50;

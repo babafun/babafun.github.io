@@ -16,6 +16,7 @@ const SearchPage: React.FC = () => {
   const [musicData, setMusicData] = useState<MusicData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [filtersExpanded, setFiltersExpanded] = useState(false);
   const [filters, setFilters] = useState<SearchFilters>({
     query: '',
     releaseTypes: [],
@@ -151,6 +152,20 @@ const SearchPage: React.FC = () => {
     });
   };
 
+  const handleSearchFocus = () => {
+    setFiltersExpanded(true);
+  };
+
+  const handleSearchBlur = () => {
+    // Only collapse if no filters are active
+    const hasActiveFilters = filters.releaseTypes.length > 0 || 
+                            filters.licenses.length > 0 || 
+                            filters.creatorFriendlyOnly;
+    if (!hasActiveFilters) {
+      setFiltersExpanded(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="page search-page">
@@ -183,68 +198,78 @@ const SearchPage: React.FC = () => {
         <h1>Search & Filter</h1>
       </div>
       
-      <div className="search-container">
-        <div className="search-filters">
-          <div className="search-bar">
+      <div className={`search-container ${!filtersExpanded ? 'collapsed' : ''}`}>
+        <div className={`search-filters ${!filtersExpanded ? 'collapsed' : ''}`}>
+          <div className="search-input-container">
             <input
               type="text"
-              placeholder="Search songs, albums, or licenses..."
+              placeholder="Search songs, albums, or licences..."
               value={filters.query}
               onChange={(e) => handleFilterChange('query', e.target.value)}
+              onFocus={handleSearchFocus}
+              onBlur={handleSearchBlur}
               className="search-input"
             />
           </div>
           
-          <div className="filter-sections">
-            <div className="filter-section">
-              <h3>Release Labels</h3>
+          <div className={`filters-content ${filtersExpanded ? 'expanded' : ''}`}>
+            <div className="filter-group">
+              <h4>Release Labels</h4>
               <div className="filter-options">
                 {filterOptions.releaseTypes.map(releaseType => (
-                  <label key={releaseType} className="filter-checkbox">
+                  <div key={releaseType} className="filter-option" onClick={() => handleReleaseTypeToggle(releaseType)}>
                     <input
                       type="checkbox"
                       checked={filters.releaseTypes.includes(releaseType)}
                       onChange={() => handleReleaseTypeToggle(releaseType)}
+                      className="filter-checkbox"
                     />
-                    <span className={`label label-${releaseType.toLowerCase()}`}>
+                    <span className="filter-label">
                       {releaseType}
                     </span>
-                  </label>
+                  </div>
                 ))}
               </div>
             </div>
             
-            <div className="filter-section">
-              <h3>Licenses</h3>
+            <div className="filter-group">
+              <h4>Licences</h4>
               <div className="filter-options">
                 {filterOptions.licenses.map(license => (
-                  <label key={license} className="filter-checkbox">
+                  <div key={license} className="filter-option" onClick={() => handleLicenseToggle(license)}>
                     <input
                       type="checkbox"
                       checked={filters.licenses.includes(license)}
                       onChange={() => handleLicenseToggle(license)}
+                      className="filter-checkbox"
                     />
-                    <span className="license-name">{license}</span>
-                  </label>
+                    <span className="filter-label">{license}</span>
+                  </div>
                 ))}
               </div>
             </div>
             
-            <div className="filter-section">
-              <h3>Options</h3>
-              <label className="filter-checkbox">
-                <input
-                  type="checkbox"
-                  checked={filters.creatorFriendlyOnly}
-                  onChange={(e) => handleFilterChange('creatorFriendlyOnly', e.target.checked)}
-                />
-                <span className="label label-creator-friendly">Creator Friendly Only</span>
-              </label>
+            <div className="filter-group">
+              <h4>Options</h4>
+              <div className="filter-options">
+                <div className="filter-option" onClick={(e) => {
+                  e.preventDefault();
+                  handleFilterChange('creatorFriendlyOnly', !filters.creatorFriendlyOnly);
+                }}>
+                  <input
+                    type="checkbox"
+                    checked={filters.creatorFriendlyOnly}
+                    onChange={(e) => handleFilterChange('creatorFriendlyOnly', e.target.checked)}
+                    className="filter-checkbox"
+                  />
+                  <span className="filter-label">Creator Friendly Only</span>
+                </div>
+              </div>
             </div>
             
-            <div className="filter-section">
-              <h3>Sort By</h3>
-              <div className="sort-controls">
+            <div className="filter-group">
+              <h4>Sort By</h4>
+              <div className="sort-options">
                 <select
                   value={filters.sortBy}
                   onChange={(e) => handleFilterChange('sortBy', e.target.value)}
@@ -264,18 +289,18 @@ const SearchPage: React.FC = () => {
                 </select>
               </div>
             </div>
-          </div>
-          
-          <div className="filter-actions">
-            <button onClick={clearFilters} className="btn btn-secondary">
+            
+            <button onClick={clearFilters} className="clear-filters-btn">
               Clear Filters
             </button>
           </div>
         </div>
         
         <div className="search-results">
-          <div className="results-header">
-            <h2>Results ({filteredSongs.length} songs)</h2>
+          <div className="search-results-header">
+            <div className="results-count">
+              {filteredSongs.length} song{filteredSongs.length !== 1 ? 's' : ''} found
+            </div>
           </div>
           
           <div className="songs-list">
@@ -317,7 +342,7 @@ const SearchPage: React.FC = () => {
                       </div>
                       {song.license && (
                         <div className="song-license">
-                          License: {song.license}
+                          Licence: {song.license}
                         </div>
                       )}
                     </div>
@@ -341,6 +366,7 @@ const SearchPage: React.FC = () => {
             
             {filteredSongs.length === 0 && (
               <div className="no-results">
+                <h3>No songs found</h3>
                 <p>No songs match your search criteria.</p>
                 <button onClick={clearFilters} className="btn btn-primary">
                   Clear Filters
