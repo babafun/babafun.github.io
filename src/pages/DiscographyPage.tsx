@@ -65,7 +65,7 @@ const DiscographyPage: React.FC = () => {
         <div className="header-content">
           <h1>Discography</h1>
           <p className="page-description">
-            All albums organized chronologically
+            All albums organised chronologically
           </p>
           <Link to="/music/search" className="btn btn-secondary">
             Search Songs

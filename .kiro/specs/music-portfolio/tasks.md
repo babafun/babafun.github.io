@@ -135,7 +135,7 @@
 ### 3.3 Implement TypeScript Data Loader (WASM Wrapper)
 **Requirements:** 2.6, 2.7, 10.6
 - [x] Create `src/utils/dataLoader.ts`
-- [x] Import WASM bindings
+- [~] Import WASM bindings
 - [x] Implement `DataLoader` class:
   - `loadMusicData()` async function to fetch JSON
   - Call WASM `validate_music_data()` for validation
@@ -165,7 +165,7 @@
 - [x] **Property 2:** Write test for album grouping preservation (validates Requirements 3.1, 3.2)
 - [x] **Property 3:** Write test for album grouping correctness (validates Requirements 3.1, 3.2)
 - [x] **Property 7:** Write test for unique song IDs (validates Requirement 2.7)
-- [x] Run tests and ensure all pass
+- [~] Run tests and ensure all pass
 
 ## Phase 4: Styling Foundation
 
@@ -235,14 +235,14 @@
 - [x] Implement conditional license display (only if non-empty)
 - [x] Render streaming links as clickable `<a>` elements with proper attributes
 - [x] Apply consistent styling
-- [x] Use semantic HTML and ARIA labels
+- [~] Use semantic HTML and ARIA labels
 
 ### 5.3 Implement License Display Logic
 **Requirements:** 4.5, 4.6
 - [x] Create `src/utils/display.ts`
-- [ ] Implement `shouldDisplayLicense()` function
+- [~] Implement `shouldDisplayLicense()` function
 - [x] **Property 5:** Write property-based test for license display logic (validates Requirements 4.5, 4.6)
-- [ ] Integrate into SongDetailView component
+- [~] Integrate into SongDetailView component
 
 ### 5.4 Implement CreatorListView Component
 **Requirements:** 5.1, 5.2, 5.3, 5.4, 5.5, 5.6
@@ -272,11 +272,11 @@
 
 ### 5.7 Write Component Unit Tests
 **Requirements:** All component requirements
-- [ ] Write unit tests for DiscographyView rendering
-- [ ] Write unit tests for SongDetailView rendering and conditional logic
-- [ ] Write unit tests for CreatorListView filtering
-- [ ] Write unit tests for ViewSelector interaction
-- [ ] Aim for 80%+ component coverage
+- [~] Write unit tests for DiscographyView rendering
+- [~] Write unit tests for SongDetailView rendering and conditional logic
+- [~] Write unit tests for CreatorListView filtering
+- [~] Write unit tests for ViewSelector interaction
+- [~] Aim for 80%+ component coverage
 
 ## Phase 6: Main Application
 
@@ -298,7 +298,7 @@
 - [x] Import React and ReactDOM
 - [x] Import App component
 - [x] Import styles (colors.css, main.css)
-- [ ] Initialize theme with `initTheme()`
+- [~] Initialize theme with `initTheme()`
 - [x] Render App component to DOM
 - [x] Add StrictMode wrapper
 
@@ -308,14 +308,14 @@
 - [x] Add meta tags for viewport and charset
 - [x] Update title to "Music Portfolio"
 - [x] Link to main.tsx as module script
-- [ ] Remove old CSS links and content
+- [~] Remove old CSS links and content
 
 ### 6.4 Write Integration Tests
 **Requirements:** All
 - [x] **Property 10:** Write test for view switching data preservation (validates Requirements 3, 4, 5)
 - [x] Test full data loading flow
 - [x] Test error handling
-- [x] Test view navigation
+- [~] Test view navigation
 
 ## Phase 7: Accessibility & Responsive Design
 
@@ -333,7 +333,7 @@
 - [x] Add ARIA labels to navigation elements
 - [x] Add ARIA labels to view selector
 - [x] Add ARIA live regions for loading/error states
-- [ ] Add alt text for any icons or images
+- [~] Add alt text for any icons or images
 - [x] Add aria-label to external links explaining they open in new tab
 
 ### 7.3 Test Responsive Design
@@ -343,16 +343,16 @@
 - [x] Test layout on desktop (1024px+)
 - [x] Verify no horizontal overflow at any size
 - [x] **Property 9:** Write property-based test for responsive layout bounds (validates Requirements 8.1, 8.2, 8.3)
-- [ ] Adjust media queries as needed
+- [~] Adjust media queries as needed
 
 ### 7.4 Accessibility Audit
 **Requirements:** 9.1, 9.2, 9.3, 9.4, 9.5, 9.6
-- [ ] Run Lighthouse accessibility audit
-- [ ] Test with screen reader (NVDA/JAWS/VoiceOver)
-- [ ] Verify color contrast ratios
-- [ ] Check focus indicators
-- [ ] Verify all images have alt text
-- [ ] Fix any issues discovered
+- [~] Run Lighthouse accessibility audit
+- [~] Test with screen reader (NVDA/JAWS/VoiceOver)
+- [~] Verify color contrast ratios
+- [~] Check focus indicators
+- [~] Verify all images have alt text
+- [~] Fix any issues discovered
 
 ## Phase 8: Privacy & Contact Requirements
 
@@ -362,7 +362,7 @@
 - [x] Verify no email addresses displayed
 - [x] Verify no social media links
 - [x] Verify no direct messaging interfaces
-- [ ] Update main site index.html to remove/hide contact section if needed
+- [~] Update main site index.html to remove/hide contact section if needed
 
 ## Phase 9: Performance Optimization
 
@@ -376,16 +376,16 @@
 
 ### 9.2 Performance Testing
 **Requirements:** 10.1, 10.2, 10.3, 10.4, 10.5, 10.6
-- [ ] Run Lighthouse performance audit
-- [ ] Measure initial load time
-- [ ] Measure time to interactive
-- [ ] Check bundle size (target: < 200KB gzipped including WASM)
-- [ ] Check WASM module size (target: < 50KB gzipped)
-- [ ] Test on simulated 3G connection
-- [ ] Verify view switching is instant (< 100ms)
-- [ ] Benchmark Rust validation speed (target: < 10ms for 100 songs)
-- [ ] Compare WASM vs pure JS performance for filtering
-- [ ] Verify minification is working (check for console.log removal)
+- [~] Run Lighthouse performance audit
+- [~] Measure initial load time
+- [~] Measure time to interactive
+- [~] Check bundle size (target: < 200KB gzipped including WASM)
+- [~] Check WASM module size (target: < 50KB gzipped)
+- [~] Test on simulated 3G connection
+- [~] Verify view switching is instant (< 100ms)
+- [~] Benchmark Rust validation speed (target: < 10ms for 100 songs)
+- [~] Compare WASM vs pure JS performance for filtering
+- [~] Verify minification is working (check for console.log removal)
 
 ## Phase 10: Testing & Validation
 
@@ -393,35 +393,35 @@
 **Requirements:** All
 - [x] Run all property-based tests with `npm run test`
 - [x] Verify all 10 properties pass
-- [ ] Fix any failing tests
-- [ ] Document any edge cases discovered
+- [~] Fix any failing tests
+- [~] Document any edge cases discovered
 
 ### 10.2 Run All Unit Tests
 **Requirements:** All
-- [ ] Run unit tests with `npm run test`
-- [ ] Verify 80%+ code coverage
+- [~] Run unit tests with `npm run test`
+- [~] Verify 80%+ code coverage
 - [ ] Fix any failing tests
-- [ ] Add tests for any uncovered critical paths
+- [~] Add tests for any uncovered critical paths
 
 ### 10.3 Manual Testing
 **Requirements:** All
 - [x] Test all three views (Discography, Songs, Creator List)
 - [ ] Test view navigation
-- [ ] Test theme switching
-- [ ] Test on multiple browsers (Chrome, Firefox, Safari, Edge)
-- [ ] Test on multiple devices (mobile, tablet, desktop)
-- [ ] Test with different screen sizes
-- [ ] Test keyboard navigation
-- [ ] Test with screen reader
+- [~] Test theme switching
+- [~] Test on multiple browsers (Chrome, Firefox, Safari, Edge)
+- [~] Test on multiple devices (mobile, tablet, desktop)
+- [~] Test with different screen sizes
+- [~] Test keyboard navigation
+- [~] Test with screen reader
 
 ### 10.4 Data Validation Testing
 **Requirements:** 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7
-- [ ] Test with invalid JSON (should show error)
-- [ ] Test with missing required fields (should show error)
-- [ ] Test with invalid release types (should show error)
-- [ ] Test with duplicate IDs (should show error)
-- [ ] Test with empty songs array (should handle gracefully)
-- [ ] Test with large dataset (50+ songs)
+- [~] Test with invalid JSON (should show error)
+- [~] Test with missing required fields (should show error)
+- [~] Test with invalid release types (should show error)
+- [~] Test with duplicate IDs (should show error)
+- [~] Test with empty songs array (should handle gracefully)
+- [~] Test with large dataset (50+ songs)
 
 ## Phase 11: Build & Deployment
 
