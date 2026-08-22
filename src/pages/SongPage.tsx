@@ -82,11 +82,11 @@ const SongPage: React.FC = () => {
       <div className="page-header">
         <div className="breadcrumb">
           <Link to="/music" className="breadcrumb-link">Music</Link>
-          <span className="breadcrumb-separator">→</span>
+          <span className="breadcrumb-separator"> &gt; </span>
           <Link to="/music/discography" className="breadcrumb-link">Discography</Link>
-          <span className="breadcrumb-separator">→</span>
+          <span className="breadcrumb-separator"> &gt; </span>
           <Link to={`/music/a/${foundAlbum.id}`} className="breadcrumb-link">{foundAlbum.title}</Link>
-          <span className="breadcrumb-separator">→</span>
+          <span className="breadcrumb-separator"> &gt; </span>
           <span className="breadcrumb-current">{foundTrack.title}</span>
         </div>
       </div>
@@ -132,7 +132,6 @@ const SongPage: React.FC = () => {
             <div className="info-section">
               <h3>License</h3>
               <div className="license-info">
-                <div className="license-name">{foundTrack.license}</div>
                 <div className="license-description">{getLicenseDescription(foundTrack.license)}</div>
               </div>
             </div>

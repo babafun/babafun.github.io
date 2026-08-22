@@ -1,107 +1,233 @@
 [
   {
-    "id": "neon-drift",
-    "title": "Neon Drift",
-    "releaseYear": 2024,
-    "streamLink": "https://push.fm/fl/babafun-neon-drift",
+    "id": "neural-bloom",
+    "title": "Neural Bloom",
+    "releaseYear": 2025,
+    "streamLink": "https://push.fm/fl/8furwhol/",
     "hasContentId": false,
-    "albumArtwork": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f",
+    "albumArtwork": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/49/43/f0/4943f063-2c9f-9544-04c1-4bcdf2495c4f/5063831574343_cover.jpg/640x640bb.jpg",
     "tracks": [
       {
-        "id": "neon-drift-title-track",
-        "title": "Neon Drift",
+        "id": "battlegrounds",
+        "title": "BATTLEGROUNDS",
         "license": "CC BY 4.0"
       },
       {
-        "id": "pixel-highway",
-        "title": "Pixel Highway",
-        "license": "CC BY 4.0",
-        "overrideStreamLink": "https://push.fm/fl/babafun-pixel-highway"
+        "id": "true-strength",
+        "title": "True Strength",
+        "license": "BGML-P"
       },
       {
-        "id": "synthwave-sunrise",
-        "title": "Synthwave Sunrise",
-        "license": "CC BY-SA 4.0"
+        "id": "facing-it-all",
+        "title": "Facing It All (Original Edition)",
+        "license": "BGML-P"
       },
       {
-        "id": "glitch-city",
-        "title": "Glitch City",
-        "license": "CC0 1.0"
-      },
-      {
-        "id": "retrograde-loop",
-        "title": "Retrograde Loop",
-        "license": ""
+        "id": "tutorial",
+        "title": "TUTORIAL",
+        "license": "BGML-P"
       }
     ]
   },
   {
-    "id": "dungeon-frequencies",
-    "title": "Dungeon Frequencies",
-    "releaseYear": 2023,
-    "streamLink": "https://push.fm/fl/babafun-dungeon-frequencies",
-    "hasContentId": true,
-    "releaseLabel": "8-Bit Collective",
-    "albumArtwork": "https://images.unsplash.com/photo-1571330735066-03aaa9429d89",
+    "id": "pi",
+    "title": "Pi Power!",
+    "releaseYear": 2025,
+    "streamLink": "https://push.fm/fl/cfxg5sy4",
+    "hasContentId": false,
+    "albumArtwork": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/0f/b9/60/0fb960b9-da56-3796-9508-76238bc9e9d7/5063907815462_cover.jpg/640x640bb.jpg",
     "tracks": [
       {
-        "id": "dungeon-entrance",
-        "title": "Dungeon Entrance",
-        "license": "BGML-P"
+        "id": "pi-party",
+        "title": "Pi Party",
+        "license": "All Rights Reserved"
       },
       {
-        "id": "boss-encounter",
-        "title": "Boss Encounter",
-        "license": "BGML-P",
-        "overrideStreamLink": "https://push.fm/fl/babafun-boss-encounter"
+        "id": "pi-power-bossfight",
+        "title": "Pi Power! (BOSS FIGHT EDITION)",
+        "license": "All Rights Reserved"
       },
       {
-        "id": "treasure-room",
-        "title": "Treasure Room",
-        "license": "BGML-P"
+        "id": "pi-chill",
+        "title": "Pi Chill",
+        "license": "All Rights Reserved"
       },
       {
-        "id": "final-descent",
-        "title": "Final Descent",
+        "id": "radius-forest",
+        "title": "Radius Forest",
+        "license": "All Rights Reserved"
+      },
+      {
+        "id": "pi-power",
+        "title": "Pi Power!",
         "license": "All Rights Reserved"
       }
     ]
   },
   {
-    "id": "void-signal",
-    "title": "Void Signal",
-    "releaseYear": 2022,
-    "streamLink": "https://push.fm/fl/babafun-void-signal",
+    "id": "vertex-valley",
+    "title": "Vertex Valley",
+    "releaseYear": 2026,
+    "streamLink": "https://push.fm/fl/lyUC3qsa",
     "hasContentId": false,
     "releaseLabel": "",
-    "albumArtwork": "https://images.unsplash.com/photo-1614149162883-504ce4d13909",
+    "albumArtwork": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/e4/90/73/e4907395-2a76-6d60-619b-43dfe6d976fd/5063906077618_cover.jpg/640x640bb.jpg",
     "tracks": [
       {
-        "id": "carrier-wave",
-        "title": "Carrier Wave",
-        "license": "CC0 1.0"
+        "id": "rocky-caves",
+        "title": "Rocky Caves",
+        "license": "BGML-P"
       },
       {
-        "id": "static-bloom",
-        "title": "Static Bloom",
-        "license": "CC BY 4.0"
+        "id": "sine-waves",
+        "title": "Sine Waves",
+        "license": "BGML-P"
       },
       {
-        "id": "deep-scan",
-        "title": "Deep Scan",
-        "license": "All Rights Reserved",
-        "overrideStreamLink": "https://push.fm/fl/babafun-deep-scan"
+        "id": "easter-egg",
+        "title": "Easter Egg",
+        "license": "BGML-P"
       },
       {
-        "id": "null-space",
-        "title": "Null Space",
-        "license": ""
+        "id": "grassy-meadows",
+        "title": "Grassy Meadows",
+        "license": "BGML-P"
       },
       {
-        "id": "signal-lost",
-        "title": "Signal Lost",
+        "id": "autumn-night",
+        "title": "Autumn Night",
+        "license": "BGML-P"
+      },
+      {
+        "id": "chromatic-aberration",
+        "title": "Chromatic Aberration",
+        "license": "BGML-P"
+      },
+      {
+        "id": "grey-rain",
+        "title": "Grey Rain",
+        "license": "BGML-P"
+      },
+      {
+        "id": "floating-steps",
+        "title": "Floating Steps",
+        "license": "BGML-P"
+      },
+      {
+        "id": "magnetic-mountains",
+        "title": "Magnetic Mountains",
+        "license": "BGML-P"
+      }
+    ]
+  },
+  {
+    "id": "perpetual-s",
+    "title": "Perpetual",
+    "releaseYear": 2026,
+    "streamLink": "https://push.fm/fl/HBXkkBdi",
+    "hasContentId": true,
+    "albumArtwork": "https://i1.sndcdn.com/artworks-abbXhNtWLKZtVPeo-DmbMFg-t1080x1080.png",
+    "tracks": [
+      {
+        "id": "perpetual",
+        "title": "PERPETUAL",
+        "license": "All Rights Reserved"
+      }
+    ]
+  },
+  {
+    "id": "clouds-s",
+    "title": "Clouds",
+    "releaseYear": 2026,
+    "streamLink": "https://push.fm/fl/ywOzhzDU",
+    "hasContentId": true,
+    "albumArtwork": "https://i1.sndcdn.com/artworks-6aQdqdu0FHyLZRvs-zApMSA-t1080x1080.png",
+    "tracks": [
+      {
+        "id": "clouds",
+        "title": "Clouds",
+        "license": "All Rights Reserved"
+      }
+    ]
+  },
+  {
+    "id": "baby-steps-s",
+    "title": "Baby Steps",
+    "releaseYear": 2026,
+    "streamLink": "https://notnoise.co/link/::baby-steps",
+    "hasContentId": true,
+    "albumArtwork": "https://i1.sndcdn.com/artworks-37yEzsLyTMHeeRsG-SEEtmA-t1080x1080.png",
+    "tracks": [
+      {
+        "id": "baby-steps",
+        "title": "Baby Steps",
+        "license": "All Rights Reserved"
+      }
+    ]
+  },
+  {
+    "id": "submerge-s",
+    "title": "Submerge",
+    "releaseYear": 2026,
+    "streamLink": "https://push.fm/fl/HBXkkBdi",
+    "hasContentId": false,
+    "albumArtwork": "https://i1.sndcdn.com/artworks-I5DwebdBouztVCsi-JUSVUA-t1080x1080.jpg",
+    "tracks": [
+      {
+        "id": "submerge",
+        "title": "Submerge",
+        "license": "BGML-P"
+      }
+    ]
+  },
+  {
+    "id": "moderate-speed-chase-s",
+    "title": "Moderate Speed Chase",
+    "releaseYear": 2026,
+    "streamLink": "https://notnoise.co/link/babafun-moderate-speed-chase",
+    "hasContentId": false,
+    "albumArtwork": "https://i1.sndcdn.com/artworks-hzTqTRN6YUKpIWMK-QB6oXw-t1080x1080.png",
+    "tracks": [
+      {
+        "id": "moderate-speed-chase",
+        "title": "Moderate Speed Chase",
         "license": "CC BY-SA 4.0"
       }
     ]
+  },
+  {
+    "id": "singularity",
+    "title": "Singularity",
+    "releaseYear": -1,
+    "streamLink": "http://ha.mr/#%F0%9F%A7%AE%F0%9F%87%B2%F0%9F%87%AC%F0%9F%A7%9A%F0%9F%8F%BF%F0%9F%A5%AA%F0%9F%A4%B8%F0%9F%8F%BB%E2%80%8D%E2%99%82%EF%B8%8F%F0%9F%91%A8%E2%80%8D%F0%9F%92%BC%E2%8F%A9%F0%9F%AB%A2%F0%9F%8F%83%E2%80%8D%E2%99%80%EF%B8%8F%F0%9F%A7%9C%F0%9F%8F%BD%E2%80%8D%E2%99%80%EF%B8%8F%F0%9F%A7%8E%F0%9F%8F%BE%E2%80%8D%E2%9E%A1%EF%B8%8F%F0%9F%93%89%F0%9F%A7%96%F0%9F%8F%BB%E2%80%8D%E2%99%82%EF%B8%8F%F0%9F%9A%A3%F0%9F%8F%BD%F0%9F%9B%B8%F0%9F%91%A8%F0%9F%8F%BD%E2%80%8D%F0%9F%A6%AF%E2%80%8D%E2%9E%A1%EF%B8%8F%F0%9F%9A%A3%E2%9A%95%EF%B8%8F%F0%9F%A4%BC%F0%9F%8F%BD%F0%9F%A7%91%F0%9F%8F%BE%E2%80%8D%F0%9F%A6%B0%F0%9F%92%81%F0%9F%8F%BD%E2%80%8D%E2%99%80%EF%B8%8F%F0%9F%87%A6%F0%9F%87%BC%F0%9F%A5%AB%F0%9F%A7%91%F0%9F%8F%BC%E2%80%8D%F0%9F%A6%BD%E2%80%8D%E2%9E%A1%EF%B8%8F%F0%9F%9A%B6%F0%9F%8F%BF%E2%80%8D%E2%99%80%EF%B8%8F%E2%80%8D%E2%9E%A1%EF%B8%8F%F0%9F%91%A9%F0%9F%8F%BE%E2%80%8D%F0%9F%A4%9D%E2%80%8D%F0%9F%91%A8%F0%9F%8F%BF%F0%9F%A5%8D%F0%9F%92%87%F0%9F%8F%BE%E2%80%8D%E2%99%80%EF%B8%8F%F0%9F%A6%BB%F0%9F%8F%BF%F0%9F%8F%80%F0%9F%91%A9%F0%9F%8F%BE%E2%80%8D%F0%9F%8D%BC%F0%9F%90%92%E2%9C%8C%EF%B8%8F%E2%8C%A8%EF%B8%8F%F0%9F%8F%83%F0%9F%8F%BC%E2%80%8D%E2%99%82%EF%B8%8F%E2%80%8D%E2%9E%A1%EF%B8%8F%F0%9F%A7%91%F0%9F%8F%BF%E2%80%8D%F0%9F%94%AC%F0%9F%91%AD%F0%9F%8F%BE%F0%9F%95%97%F0%9F%94%9D%F0%9F%A7%8D%F0%9F%8F%BF%F0%9F%95%89%EF%B8%8F%F0%9F%A4%99%F0%9F%8F%BF%F0%9F%91%A8%F0%9F%8F%BF%E2%80%8D%E2%9D%A4%EF%B8%8F%E2%80%8D%F0%9F%91%A8%F0%9F%8F%BE%F0%9F%8D%B5%F0%9F%A7%91%F0%9F%8F%BB%E2%80%8D%F0%9F%A4%9D%E2%80%8D%F0%9F%A7%91%F0%9F%8F%BC%F0%9F%9A%A3%F0%9F%8F%BC%E2%80%8D%E2%99%80%EF%B8%8F%F0%9F%91%A9%F0%9F%8F%BD%E2%80%8D%E2%9D%A4%EF%B8%8F%E2%80%8D%F0%9F%91%A9%F0%9F%8F%BB%F0%9F%A7%91%F0%9F%8F%BD%E2%80%8D%E2%9D%A4%EF%B8%8F%E2%80%8D%F0%9F%92%8B%E2%80%8D%F0%9F%A7%91%F0%9F%8F%BB%F0%9F%A7%87%F0%9F%92%82%F0%9F%8F%BB%F0%9F%91%A9%F0%9F%8F%BE%E2%80%8D%F0%9F%8E%A4",
+    "hasContentId": true,
+    "albumArtwork": "http://ha.mr/#%F0%9F%A7%AE%F0%9F%87%B2%F0%9F%87%AC%F0%9F%A7%9A%F0%9F%8F%BF%F0%9F%A5%AA%F0%9F%A4%B8%F0%9F%8F%BB%E2%80%8D%E2%99%82%EF%B8%8F%F0%9F%91%A8%E2%80%8D%F0%9F%92%BC%E2%8F%A9%F0%9F%AB%A2%F0%9F%8F%83%E2%80%8D%E2%99%80%EF%B8%8F%F0%9F%A7%9C%F0%9F%8F%BD%E2%80%8D%E2%99%80%EF%B8%8F%F0%9F%A7%8E%F0%9F%8F%BE%E2%80%8D%E2%9E%A1%EF%B8%8F%F0%9F%93%89%F0%9F%A7%96%F0%9F%8F%BB%E2%80%8D%E2%99%82%EF%B8%8F%F0%9F%9A%A3%F0%9F%8F%BD%F0%9F%9B%B8%F0%9F%91%A8%F0%9F%8F%BD%E2%80%8D%F0%9F%A6%AF%E2%80%8D%E2%9E%A1%EF%B8%8F%F0%9F%9A%A3%E2%9A%95%EF%B8%8F%F0%9F%A4%BC%F0%9F%8F%BD%F0%9F%A7%91%F0%9F%8F%BE%E2%80%8D%F0%9F%A6%B0%F0%9F%92%81%F0%9F%8F%BD%E2%80%8D%E2%99%80%EF%B8%8F%F0%9F%87%A6%F0%9F%87%BC%F0%9F%A5%AB%F0%9F%A7%91%F0%9F%8F%BC%E2%80%8D%F0%9F%A6%BD%E2%80%8D%E2%9E%A1%EF%B8%8F%F0%9F%9A%B6%F0%9F%8F%BF%E2%80%8D%E2%99%80%EF%B8%8F%E2%80%8D%E2%9E%A1%EF%B8%8F%F0%9F%91%A9%F0%9F%8F%BE%E2%80%8D%F0%9F%A4%9D%E2%80%8D%F0%9F%91%A8%F0%9F%8F%BF%F0%9F%A5%8D%F0%9F%92%87%F0%9F%8F%BE%E2%80%8D%E2%99%80%EF%B8%8F%F0%9F%A6%BB%F0%9F%8F%BF%F0%9F%8F%80%F0%9F%91%A9%F0%9F%8F%BE%E2%80%8D%F0%9F%8D%BC%F0%9F%90%92%E2%9C%8C%EF%B8%8F%E2%8C%A8%EF%B8%8F%F0%9F%8F%83%F0%9F%8F%BC%E2%80%8D%E2%99%82%EF%B8%8F%E2%80%8D%E2%9E%A1%EF%B8%8F%F0%9F%A7%91%F0%9F%8F%BF%E2%80%8D%F0%9F%94%AC%F0%9F%91%AD%F0%9F%8F%BE%F0%9F%95%97%F0%9F%94%9D%F0%9F%A7%8D%F0%9F%8F%BF%F0%9F%95%89%EF%B8%8F%F0%9F%A4%99%F0%9F%8F%BF%F0%9F%91%A8%F0%9F%8F%BF%E2%80%8D%E2%9D%A4%EF%B8%8F%E2%80%8D%F0%9F%91%A8%F0%9F%8F%BE%F0%9F%8D%B5%F0%9F%A7%91%F0%9F%8F%BB%E2%80%8D%F0%9F%A4%9D%E2%80%8D%F0%9F%A7%91%F0%9F%8F%BC%F0%9F%9A%A3%F0%9F%8F%BC%E2%80%8D%E2%99%80%EF%B8%8F%F0%9F%91%A9%F0%9F%8F%BD%E2%80%8D%E2%9D%A4%EF%B8%8F%E2%80%8D%F0%9F%91%A9%F0%9F%8F%BB%F0%9F%A7%91%F0%9F%8F%BD%E2%80%8D%E2%9D%A4%EF%B8%8F%E2%80%8D%F0%9F%92%8B%E2%80%8D%F0%9F%A7%91%F0%9F%8F%BB%F0%9F%A7%87%F0%9F%92%82%F0%9F%8F%BB%F0%9F%91%A9%F0%9F%8F%BE%E2%80%8D%F0%9F%8E%A4",
+    "tracks": [
+      {
+        "id": "dark-energy",
+        "title": "Dark Energy",
+        "license": "All Rights Reserved",
+        "overrideStreamLink": "https://push.fm/fl/E8LGITX6"
+      },
+      {
+        "id": "vacuum-decay",
+        "title": "Vacuum Decay",
+        "license": "All Rights Reserved",
+        "overrideStreamLink": "https://push.fm/fl/yvtSDPrD"
+      },
+      {
+        "id": "redshift",
+        "title": "Redshift",
+        "license": "All Rights Reserved",
+        "overrideStreamLink": "https://push.fm/fl/oXIZ0hUu"
+      },
+      {
+        "id": "the-milky-way",
+        "title": "The Milky Way",
+        "license": "All Rights Reserved",
+        "overrideStreamLink": "https://push.fm/fl/awcjxov4"
+      }
+    ]
   }
+  
 ]

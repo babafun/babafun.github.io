@@ -61,7 +61,7 @@ body::after {
       transparent 50%);
   z-index: -1;
   pointer-events: none;
-  transition: background 0.3s ease;
+  transition: background 0.1s ease;
 }
 
 @keyframes gradientShift {
@@ -149,7 +149,7 @@ a {
 
 a:hover {
   color: var(--accent);
-  text-shadow: 0 0 8px rgba(255, 140, 51, 0.5);
+  text-shadow: 0 0 4px rgba(255, 140, 51, 0.2);
 }
 
 a:focus {
@@ -370,7 +370,6 @@ a:focus {
 
 .btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
   border-color: var(--primary);
   background: var(--accent);
   color: var(--bg-dark);
@@ -394,7 +393,6 @@ a:focus {
 .btn-primary:hover {
   background: var(--highlight); /* Darker purple instead of orange */
   color: var(--text); /* Light text on darker background */
-  box-shadow: 0 8px 25px rgba(168, 85, 247, 0.4);
   transform: translateY(-3px);
   border-color: var(--primary);
 }
@@ -408,7 +406,6 @@ a:focus {
 .btn-secondary:hover {
   background: var(--accent); /* Orange background */
   color: var(--bg-dark); /* Dark text on orange */
-  box-shadow: 0 8px 25px rgba(255, 140, 51, 0.2);
   border-color: var(--accent);
 }
 

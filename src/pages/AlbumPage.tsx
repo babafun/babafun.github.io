@@ -57,9 +57,9 @@ const AlbumPage: React.FC = () => {
       <div className="page-header">
         <div className="breadcrumb">
           <Link to="/music" className="breadcrumb-link">Music</Link>
-          <span className="breadcrumb-separator">→</span>
+          <span className="breadcrumb-separator"> &gt; </span>
           <Link to="/music/discography" className="breadcrumb-link">Discography</Link>
-          <span className="breadcrumb-separator">→</span>
+          <span className="breadcrumb-separator"> &gt; </span>
           <span className="breadcrumb-current">{album.title}</span>
         </div>
 

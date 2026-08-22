@@ -89,6 +89,13 @@
   z-index: 1;
 }
 
+.page-description {
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  z-index: 1;
+}
+
 .project-tech {
   display: flex;
   gap: 0.5rem;
@@ -124,7 +131,7 @@
 
 .project-link:hover {
   color: var(--accent);
-  text-shadow: 0 2px 8px rgba(255, 140, 51, 0.3);
+  text-shadow: 0 2px 4px rgba(255, 140, 51, 0.15);
 }
 
 /* Code syntax highlighting placeholder */

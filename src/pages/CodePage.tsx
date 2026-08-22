@@ -12,8 +12,7 @@ const CodePage: React.FC = () => {
       
       <div className="coming-soon">
         <div className="coming-soon-content">
-          <div className="coming-soon-icon">💻</div>
-          <h2>Coming Soon</h2>
+          <h2>(will be added soon)</h2>
           <p>
             This section will showcase my game development projects, 
             programming tools, and open-source contributions.

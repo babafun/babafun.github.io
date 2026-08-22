@@ -113,16 +113,16 @@ export function getStreamingLinkText(streamingLink: string): string {
     const url = new URL(streamingLink);
     const hostname = url.hostname.toLowerCase();
 
-    if (hostname.includes('spotify')) return '🎵 Listen on Spotify';
-    if (hostname.includes('youtube') || hostname.includes('youtu.be')) return '🎵 Watch on YouTube';
-    if (hostname.includes('soundcloud')) return '🎵 Listen on SoundCloud';
-    if (hostname.includes('bandcamp')) return '🎵 Listen on Bandcamp';
-    if (hostname.includes('push.fm')) return '🎵 Listen on Push.fm';
-    if (hostname.includes('ncs.io')) return '🎵 Listen on NCS';
-    if (hostname.includes('monstercat')) return '🎵 Listen on Monstercat';
-    return '🎵 Listen Now';
+    if (hostname.includes('spotify')) return 'Listen on Spotify';
+    if (hostname.includes('youtube') || hostname.includes('youtu.be')) return 'Watch on YouTube';
+    if (hostname.includes('soundcloud')) return 'Listen on SoundCloud';
+    if (hostname.includes('bandcamp')) return 'Listen on Bandcamp';
+    if (hostname.includes('push.fm')) return 'Listen on Push.fm';
+    if (hostname.includes('ncs.io')) return 'Listen on NCS';
+    if (hostname.includes('monstercat')) return 'Listen on Monstercat';
+    return 'Listen Now';
   } catch {
-    return '🎵 Listen Now';
+    return 'Listen Now';
   }
 }
 

@@ -67,7 +67,7 @@ const SongDetailCard: React.FC<SongDetailCardProps> = ({ song }) => {
           className="streaming-link"
           aria-label={`Listen to ${song.title} by opening streaming platform in new tab`}
         >
-          🎵 Listen Now
+          Listen Now
         </a>
       </footer>
     </article>

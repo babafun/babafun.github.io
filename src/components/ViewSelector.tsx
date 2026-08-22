@@ -160,15 +160,13 @@ export const ViewSelector: React.FC<ViewSelectorProps> = ({
         view: 'discography' as ViewType,
         label: 'Discography',
         description: 'Browse music organized by albums',
-        count: songCounts?.albums,
-        icon: '📀'
+        count: songCounts?.albums
       },
       {
         view: 'songs' as ViewType,
         label: 'All Songs',
         description: 'View detailed information for all songs',
-        count: songCounts?.total,
-        icon: '🎵'
+        count: songCounts?.total
       },
       {
         view: 'creator' as ViewType,

@@ -36,6 +36,7 @@
 .search-filters.collapsed {
   padding: 1rem;
   height: auto;
+  z-index: 1;
 }
 
 .search-filters h3 {

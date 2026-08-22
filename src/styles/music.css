@@ -13,7 +13,7 @@
   padding: 3rem 1rem;
   display: flex;
   gap: 2rem;
-  justify-content: centre;
+  justify-content: center;
   flex-wrap: wrap;
 }
 
@@ -39,7 +39,7 @@
   border: 1px solid var(--border);
   border-radius: 16px;
   padding: 2rem;
-  text-align: centre;
+  text-align: center;
   transition: all 0.4s ease;
   position: relative;
   overflow: hidden;
@@ -61,7 +61,6 @@
 .stat-card:hover {
   transform: translateY(-4px);
   border-color: var(--primary);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3), 0 0 20px rgba(168, 85, 247, 0.15);
 }
 
 .stat-card:hover::before {
@@ -97,11 +96,10 @@
 }
 
 .recent-releases h2 {
-  text-align: centre;
+  text-align: center;
   margin-bottom: 3rem;
   font-size: 2.5rem;
   color: var(--primary);
-  text-shadow: 0 2px 8px rgba(168, 85, 247, 0.3);
 }
 
 .release-grid {
@@ -120,6 +118,8 @@
   position: relative;
   overflow: hidden;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
 }
 
 .release-card::before {
@@ -168,6 +168,13 @@
   margin-bottom: 1.5rem;
   position: relative;
   z-index: 1;
+  flex-grow: 1;
+}
+
+.release-card footer {
+  text-align: center;
+  position: relative;
+  z-index: 1;
 }
 
 .release-link {
@@ -182,7 +189,7 @@
 
 .release-link:hover {
   color: var(--accent);
-  text-shadow: 0 2px 8px rgba(255, 140, 51, 0.3);
+  text-shadow: 0 2px 4px rgba(255, 140, 51, 0.15);
 }
 
 /* Album and Song Cards */
@@ -235,7 +242,7 @@
 .song-content {
   padding: 2rem;
   display: flex;
-  align-items: centre;
+  align-items: center;
   gap: 2rem;
   position: relative;
   z-index: 1;
@@ -277,22 +284,29 @@
 .song-link {
   color: var(--text);
   font-family: 'Space Grotesk', sans-serif;
-  font-size: 1.5rem;
   font-weight: 600;
   transition: all 0.3s ease;
+}
+
+.album-link {
+  font-size: 1.2rem;
+}
+
+.song-link {
+  font-size: 1.5rem;
 }
 
 .album-link:hover,
 .song-link:hover {
   color: var(--accent);
-  text-shadow: 0 2px 8px rgba(255, 140, 51, 0.3);
+  text-shadow: 0 2px 4px rgba(255, 140, 51, 0.15);
 }
 
 .album-meta,
 .song-meta {
   display: flex;
   gap: 1rem;
-  align-items: centre;
+  align-items: center;
   flex-wrap: wrap;
   margin-bottom: 0.75rem;
 }
@@ -320,7 +334,8 @@
   display: flex;
   gap: 0.75rem;
   flex-shrink: 0;
-  align-items: centre;
+  align-items: center;
+  vertical-align: middle;
 }
 
 /* Song Details Page */
@@ -331,7 +346,7 @@
 }
 
 .song-header {
-  text-align: centre;
+  text-align: center;
   margin-bottom: 3rem;
   padding-bottom: 2rem;
   border-bottom: 1px solid var(--border);
@@ -351,7 +366,7 @@
 
 .song-album {
   color: var(--text-muted);
-  font-size: 1.2rem;
+  font-size: 0.6rem;
   font-weight: 300;
 }
 
@@ -380,7 +395,7 @@
 .info-item {
   display: flex;
   justify-content: space-between;
-  align-items: centre;
+  align-items: center;
   padding: 0.75rem 0;
   border-bottom: 1px solid rgba(var(--border-rgb, 100, 100, 100), 0.3);
 }
@@ -401,7 +416,7 @@
 }
 
 .licence-info {
-  text-align: centre;
+  text-align: center;
 }
 
 .licence-name {
@@ -450,7 +465,7 @@
   border: 1px solid var(--border);
   border-radius: 20px;
   padding: 2.5rem;
-  text-align: centre;
+  text-align: center;
   transition: all 0.4s ease;
   position: relative;
   overflow: hidden;
@@ -514,7 +529,7 @@
 
 .music-features .feature-link:hover {
   color: var(--accent);
-  text-shadow: 0 2px 8px rgba(255, 140, 51, 0.3);
+  text-shadow: 0 2px 4px rgba(255, 140, 51, 0.15);
 }
 
 /* Creator List View Styles */
@@ -748,7 +763,7 @@
 
 .streaming-link:hover {
   color: var(--accent);
-  text-shadow: 0 2px 8px rgba(255, 140, 51, 0.3);
+  text-shadow: 0 2px 4px rgba(255, 140, 51, 0.15);
 }
 
 .empty-state {
@@ -867,7 +882,7 @@
   
   .music-actions {
     flex-direction: column;
-    align-items: centre;
+    align-items: center;
   }
   
   .stats-grid {
