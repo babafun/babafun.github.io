@@ -5,7 +5,7 @@ import wasm from 'vite-plugin-wasm';
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), wasm()],
-  base: '/', // Adjust for subdirectory deployment
+  base: process.env.GITHUB_ACTIONS ? '/blog-website/' : '/', // GitHub Pages subdirectory or local root
   build: {
     outDir: 'dist',
     sourcemap: false,
