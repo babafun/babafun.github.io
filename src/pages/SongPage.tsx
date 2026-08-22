@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { DataLoader } from '../utils/dataLoader';
-import type { MusicData, Song } from '../types/music';
+import type { MusicData, Album, Track } from '../types/music';
 
 const SongPage: React.FC = () => {
   const { songId } = useParams<{ songId: string }>();
-  const [musicData, setMusicData] = useState<MusicData | null>(null);
+  const [albums, setAlbums] = useState<MusicData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -14,36 +14,25 @@ const SongPage: React.FC = () => {
       try {
         const dataLoader = DataLoader.getInstance();
         const data = await dataLoader.loadMusicData();
-        setMusicData(data);
+        setAlbums(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load music data');
       } finally {
         setLoading(false);
       }
     };
-
     loadData();
   }, []);
-
-  const createSongId = (songTitle: string) => {
-    return songTitle.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-  };
-
-  const createAlbumId = (albumName: string) => {
-    return albumName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-  };
 
   if (loading) {
     return (
       <div className="page song-page">
-        <div className="loading-container">
-          <p>Loading song...</p>
-        </div>
+        <div className="loading-container"><p>Loading song...</p></div>
       </div>
     );
   }
 
-  if (error || !musicData) {
+  if (error || !albums) {
     return (
       <div className="page song-page">
         <div className="error-container">
@@ -54,35 +43,37 @@ const SongPage: React.FC = () => {
     );
   }
 
-  // Find the song by ID
-  const song = musicData.songs.find(s => createSongId(s.title) === songId);
-
-  if (!song) {
-    return <Navigate to="/music/discography" replace />;
+  // Find track by ID across all albums
+  let foundTrack: Track | undefined;
+  let foundAlbum: Album | undefined;
+  for (const album of albums) {
+    const track = album.tracks.find(t => t.id === songId);
+    if (track) {
+      foundTrack = track;
+      foundAlbum = album;
+      break;
+    }
   }
 
-  const albumId = createAlbumId(song.albumName);
+  if (!foundTrack || !foundAlbum) return <Navigate to="/music/discography" replace />;
 
-  const isCreatorFriendly = (song: Song) => {
-    return song.releaseType === 'NCS' || 
-           song.license.toLowerCase().includes('cc') || 
-           song.license === 'BGML-P';
+  const streamLink = foundTrack.overrideStreamLink ?? foundAlbum.streamLink;
+
+  const isCreatorFriendly = (license: string) => {
+    const l = (license || '').toLowerCase().trim();
+    return /^cc by( \d+\.\d+)?$/.test(l) || /^cc by-sa( \d+\.\d+)?$/.test(l) ||
+           /^cc0( \d+\.\d+)?$/.test(l) || l === 'bgml-p';
   };
 
   const getLicenseDescription = (license: string) => {
-    if (!license) return null;
-    
-    const descriptions: { [key: string]: string } = {
+    const descriptions: Record<string, string> = {
       'CC BY 4.0': 'Creative Commons Attribution - You can use this track freely with attribution',
       'CC BY-SA 4.0': 'Creative Commons Attribution-ShareAlike - Use with attribution, share derivatives under same license',
-      'CC BY 3.0': 'Creative Commons Attribution - You can use this track freely with attribution',
-      'CC BY-SA 3.0': 'Creative Commons Attribution-ShareAlike - Use with attribution, share derivatives under same license',
       'CC0 1.0': 'Public Domain - No rights reserved, use freely without attribution',
       'CC0': 'Public Domain - No rights reserved, use freely without attribution',
       'BGML-P': 'Babafun Game Music License (Permissive) - Free for game development and content creation',
       'All Rights Reserved': 'Traditional copyright - Contact for licensing'
     };
-    
     return descriptions[license] || license;
   };
 
@@ -94,41 +85,41 @@ const SongPage: React.FC = () => {
           <span className="breadcrumb-separator">→</span>
           <Link to="/music/discography" className="breadcrumb-link">Discography</Link>
           <span className="breadcrumb-separator">→</span>
-          <Link to={`/music/a/${albumId}`} className="breadcrumb-link">{song.albumName}</Link>
+          <Link to={`/music/a/${foundAlbum.id}`} className="breadcrumb-link">{foundAlbum.title}</Link>
           <span className="breadcrumb-separator">→</span>
-          <span className="breadcrumb-current">{song.title}</span>
+          <span className="breadcrumb-current">{foundTrack.title}</span>
         </div>
       </div>
-      
+
       <div className="song-details">
         <div className="song-header">
-          <h1 className="song-title">{song.title}</h1>
+          <h1 className="song-title">{foundTrack.title}</h1>
           <p className="song-album">
-            from <Link to={`/music/a/${albumId}`} className="album-link">{song.albumName}</Link>
+            from <Link to={`/music/a/${foundAlbum.id}`} className="album-link">{foundAlbum.title}</Link>
           </p>
         </div>
-        
+
         <div className="song-info-grid">
           <div className="info-section">
             <h3>Release Information</h3>
             <div className="info-items">
               <div className="info-item">
                 <span className="info-label">Release Year:</span>
-                <span className="info-value">{song.releaseYear}</span>
+                <span className="info-value">{foundAlbum.releaseYear}</span>
               </div>
-              <div className="info-item">
-                <span className="info-label">Release Type:</span>
-                <span className={`label label-${song.releaseType.toLowerCase()}`}>
-                  {song.releaseType}
-                </span>
-              </div>
+              {foundAlbum.releaseLabel && (
+                <div className="info-item">
+                  <span className="info-label">Label:</span>
+                  <span className="info-value">{foundAlbum.releaseLabel}</span>
+                </div>
+              )}
               <div className="info-item">
                 <span className="info-label">Content ID:</span>
-                <span className={`label ${song.hasContentId ? 'label-content-id' : 'label-no-content-id'}`}>
-                  {song.hasContentId ? 'Yes' : 'No'}
+                <span className={`label ${foundAlbum.hasContentId ? 'label-content-id' : 'label-no-content-id'}`}>
+                  {foundAlbum.hasContentId ? 'Yes' : 'No'}
                 </span>
               </div>
-              {isCreatorFriendly(song) && (
+              {isCreatorFriendly(foundTrack.license) && (
                 <div className="info-item">
                   <span className="info-label">Creator Friendly:</span>
                   <span className="label label-creator-friendly">Yes</span>
@@ -136,50 +127,23 @@ const SongPage: React.FC = () => {
               )}
             </div>
           </div>
-          
-          {song.license && (
+
+          {foundTrack.license && (
             <div className="info-section">
               <h3>License</h3>
               <div className="license-info">
-                <div className="license-name">{song.license}</div>
-                {getLicenseDescription(song.license) && (
-                  <div className="license-description">
-                    {getLicenseDescription(song.license)}
-                  </div>
-                )}
+                <div className="license-name">{foundTrack.license}</div>
+                <div className="license-description">{getLicenseDescription(foundTrack.license)}</div>
               </div>
             </div>
           )}
         </div>
-        
+
         <div className="song-actions">
-          <a 
-            href={song.streamingLink} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="btn btn-primary btn-large"
-          >
-            Listen Now
-          </a>
-          <Link to={`/music/a/${albumId}`} className="btn btn-secondary">
-            View Album
-          </Link>
+          <a href={streamLink} target="_blank" rel="noopener noreferrer"
+             className="btn btn-primary btn-large">Listen Now</a>
+          <Link to={`/music/a/${foundAlbum.id}`} className="btn btn-secondary">View Album</Link>
         </div>
-        
-        {isCreatorFriendly(song) && (
-          <div className="creator-info">
-            <h3>For Content Creators</h3>
-            <p>
-              This track is creator-friendly and can be used in your content. 
-              {song.license && song.license !== 'All Rights Reserved' && (
-                <> Please check the license terms above for specific requirements.</>
-              )}
-              {song.hasContentId && (
-                <> Note: This track has Content ID enabled, which may affect monetization.</>
-              )}
-            </p>
-          </div>
-        )}
       </div>
     </div>
   );

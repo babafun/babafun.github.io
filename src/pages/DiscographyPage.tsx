@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { DataLoader } from '../utils/dataLoader';
-import type { MusicData, Album } from '../types/music';
+import type { MusicData } from '../types/music';
 
 const DiscographyPage: React.FC = () => {
-  const [musicData, setMusicData] = useState<MusicData | null>(null);
+  const [albums, setAlbums] = useState<MusicData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -13,37 +13,25 @@ const DiscographyPage: React.FC = () => {
       try {
         const dataLoader = DataLoader.getInstance();
         const data = await dataLoader.loadMusicData();
-        setMusicData(data);
+        setAlbums(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load music data');
       } finally {
         setLoading(false);
       }
     };
-
     loadData();
   }, []);
-
-  const createAlbumId = (albumName: string) => {
-    return albumName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-  };
-
-  const getAlbumYear = (album: Album) => {
-    const years = album.songs.map(song => song.releaseYear);
-    return Math.min(...years);
-  };
 
   if (loading) {
     return (
       <div className="page discography-page">
-        <div className="loading-container">
-          <p>Loading discography...</p>
-        </div>
+        <div className="loading-container"><p>Loading discography...</p></div>
       </div>
     );
   }
 
-  if (error || !musicData) {
+  if (error || !albums) {
     return (
       <div className="page discography-page">
         <div className="error-container">
@@ -55,68 +43,48 @@ const DiscographyPage: React.FC = () => {
   }
 
   // Sort albums by year (newest first)
-  const sortedAlbums = [...musicData.albums].sort((a, b) => {
-    return getAlbumYear(b) - getAlbumYear(a);
-  });
+  const sortedAlbums = [...albums].sort((a, b) => b.releaseYear - a.releaseYear);
 
   return (
     <div className="page discography-page">
       <div className="page-header">
         <div className="header-content">
           <h1>Discography</h1>
-          <p className="page-description">
-            All albums organised chronologically
-          </p>
-          <Link to="/music/search" className="btn btn-secondary">
-            Search Songs
-          </Link>
+          <p className="page-description">All albums organised chronologically</p>
+          <Link to="/music/search" className="btn btn-secondary">Search Songs</Link>
         </div>
       </div>
-      
+
       <div className="albums-list">
-        {sortedAlbums.map((album) => {
-          const albumId = createAlbumId(album.name);
-          const albumYear = getAlbumYear(album);
-          const albumArtwork = album.songs[0]?.albumArtwork; // Get artwork from first song
-          
-          return (
-            <div key={album.name} className="album-item">
-              <div className="album-content">
-                {albumArtwork && (
-                  <img 
-                    src={albumArtwork} 
-                    alt={`${album.name} album artwork`}
-                    className="album-artwork album-artwork-large"
-                    loading="lazy"
-                  />
-                )}
-                <div className="album-info">
-                  <h2 className="album-title">
-                    <Link to={`/music/a/${albumId}`} className="album-link">
-                      {album.name}
-                    </Link>
-                  </h2>
-                  <div className="album-meta">
-                    <span className="album-year">{albumYear}</span>
-                    <span className="album-count">{album.songs.length} songs</span>
-                  </div>
-                  <div className="album-labels">
-                    {Array.from(new Set(album.songs.map(song => song.releaseType))).map(label => (
-                      <span key={label} className={`label label-${label.toLowerCase()}`}>
-                        {label}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                <div className="album-actions">
-                  <Link to={`/music/a/${albumId}`} className="btn btn-primary">
-                    View Album
-                  </Link>
+        {sortedAlbums.map((album) => (
+          <div key={album.id} className="album-item">
+            <div className="album-content">
+              {album.albumArtwork && (
+                <img
+                  src={album.albumArtwork}
+                  alt={`${album.title} album artwork`}
+                  className="album-artwork album-artwork-large"
+                  loading="lazy"
+                />
+              )}
+              <div className="album-info">
+                <h2 className="album-title">
+                  <Link to={`/music/a/${album.id}`} className="album-link">{album.title}</Link>
+                </h2>
+                <div className="album-meta">
+                  <span className="album-year">{album.releaseYear}</span>
+                  <span className="album-count">{album.tracks.length} tracks</span>
+                  {album.releaseLabel && (
+                    <span className="album-label">{album.releaseLabel}</span>
+                  )}
                 </div>
               </div>
+              <div className="album-actions">
+                <Link to={`/music/a/${album.id}`} className="btn btn-primary">View Album</Link>
+              </div>
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
     </div>
   );

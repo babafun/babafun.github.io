@@ -1,5 +1,5 @@
 use wasm_bindgen::prelude::*;
-use crate::validation::{Song, ReleaseType};
+use crate::grouping::SongView;
 use regex::Regex;
 use lazy_static::lazy_static;
 
@@ -15,11 +15,10 @@ lazy_static! {
 #[wasm_bindgen]
 pub fn is_commercial_cc_license(license: &str) -> bool {
     let license_upper = license.to_uppercase().trim().to_string();
-    
-    // Use pre-compiled regexes for better performance
-    CC_BY_REGEX.is_match(&license_upper) ||
-    CC_BY_SA_REGEX.is_match(&license_upper) ||
-    CC0_REGEX.is_match(&license_upper)
+
+    CC_BY_REGEX.is_match(&license_upper)
+        || CC_BY_SA_REGEX.is_match(&license_upper)
+        || CC0_REGEX.is_match(&license_upper)
 }
 
 /// Checks if license is BGML-P (Babafun Game Music License - Permissive)
@@ -28,58 +27,36 @@ pub fn is_bgml_p_license(license: &str) -> bool {
     license.trim().eq_ignore_ascii_case("BGML-P")
 }
 
-/// Checks if a song is creator-friendly
-/// A song is creator-friendly if ANY of these conditions are true:
-/// 1. Has a commercial CC license (CC BY, CC BY-SA, CC0)
-/// 2. Is an NCS release
-/// 3. Has BGML-P license
+/// Checks if a license string is creator-friendly
+/// Creator-friendly: CC BY / CC BY-SA / CC0 (any version) OR BGML-P
+pub fn is_creator_friendly_license(license: &str) -> bool {
+    is_commercial_cc_license(license) || is_bgml_p_license(license)
+}
+
+/// Checks if a SongView JSON object is creator-friendly
 #[wasm_bindgen]
 pub fn is_creator_friendly_song(song_json: &str) -> bool {
-    let song: Song = match serde_json::from_str(song_json) {
+    let song: SongView = match serde_json::from_str(song_json) {
         Ok(s) => s,
         Err(_) => return false,
     };
-    
-    is_creator_friendly(&song)
+    is_creator_friendly_license(&song.license)
 }
 
-/// Internal function to check if a song is creator-friendly
-/// A song is creator-friendly if ANY of these conditions are true:
-/// 1. Has a commercial CC license (CC BY, CC BY-SA, CC0)
-/// 2. Is an NCS release
-/// 3. Has BGML-P license
-pub fn is_creator_friendly(song: &Song) -> bool {
-    // Check for commercial CC license
-    if is_commercial_cc_license(&song.license) {
-        return true;
-    }
-    
-    // Check for NCS release
-    if song.release_type == ReleaseType::NCS {
-        return true;
-    }
-    
-    // Check for BGML-P license
-    if is_bgml_p_license(&song.license) {
-        return true;
-    }
-    
-    false
-}
-
-/// Filters songs to only creator-friendly ones
+/// Filters SongView objects to only creator-friendly ones
 /// Returns JSON string of filtered songs
 #[wasm_bindgen]
 pub fn filter_creator_friendly(songs_json: &str) -> String {
-    let songs: Vec<Song> = match serde_json::from_str(songs_json) {
+    let songs: Vec<SongView> = match serde_json::from_str(songs_json) {
         Ok(s) => s,
         Err(e) => return format!("{{\"error\": \"Invalid JSON: {}\"}}", e),
     };
-    
-    let filtered: Vec<&Song> = songs.iter()
-        .filter(|song| is_creator_friendly(song))
+
+    let filtered: Vec<&SongView> = songs
+        .iter()
+        .filter(|song| is_creator_friendly_license(&song.license))
         .collect();
-    
+
     match serde_json::to_string(&filtered) {
         Ok(json) => json,
         Err(e) => format!("{{\"error\": \"Serialization error: {}\"}}", e),
@@ -99,7 +76,7 @@ mod tests {
         assert!(is_commercial_cc_license("CC BY-SA"));
         assert!(is_commercial_cc_license("CC0 1.0"));
         assert!(is_commercial_cc_license("CC0"));
-        
+
         assert!(!is_commercial_cc_license("CC BY-NC 4.0")); // Non-commercial
         assert!(!is_commercial_cc_license("All Rights Reserved"));
         assert!(!is_commercial_cc_license(""));
@@ -110,60 +87,107 @@ mod tests {
         assert!(is_bgml_p_license("BGML-P"));
         assert!(is_bgml_p_license("bgml-p")); // case insensitive
         assert!(is_bgml_p_license(" BGML-P ")); // with whitespace
-        
+
         assert!(!is_bgml_p_license("BGML"));
         assert!(!is_bgml_p_license("BGML-R"));
         assert!(!is_bgml_p_license(""));
     }
 
     #[test]
-    fn test_is_creator_friendly() {
-        // Test CC license
-        let song_cc = Song {
-            id: "1".to_string(),
-            title: "Test".to_string(),
-            album_name: "Album".to_string(),
-            release_type: ReleaseType::Independent,
-            has_content_id: false,
-            streaming_link: "https://example.com".to_string(),
-            license: "CC BY 4.0".to_string(),
-        };
-        assert!(is_creator_friendly(&song_cc));
+    fn test_is_creator_friendly_license() {
+        assert!(is_creator_friendly_license("CC BY 4.0"));
+        assert!(is_creator_friendly_license("CC BY-SA 4.0"));
+        assert!(is_creator_friendly_license("CC0 1.0"));
+        assert!(is_creator_friendly_license("BGML-P"));
 
-        // Test NCS release
-        let song_ncs = Song {
-            id: "2".to_string(),
-            title: "Test".to_string(),
-            album_name: "Album".to_string(),
-            release_type: ReleaseType::NCS,
-            has_content_id: false,
-            streaming_link: "https://example.com".to_string(),
-            license: "".to_string(),
-        };
-        assert!(is_creator_friendly(&song_ncs));
+        assert!(!is_creator_friendly_license("All Rights Reserved"));
+        assert!(!is_creator_friendly_license(""));
+        assert!(!is_creator_friendly_license("CC BY-NC 4.0"));
+    }
 
-        // Test BGML-P license
-        let song_bgml = Song {
-            id: "3".to_string(),
-            title: "Test".to_string(),
-            album_name: "Album".to_string(),
-            release_type: ReleaseType::Independent,
-            has_content_id: false,
-            streaming_link: "https://example.com".to_string(),
-            license: "BGML-P".to_string(),
-        };
-        assert!(is_creator_friendly(&song_bgml));
+    fn make_song_view_json(license: &str) -> String {
+        format!(
+            r#"{{
+                "id": "t-001",
+                "title": "Test Track",
+                "license": "{}",
+                "streamLink": "https://example.com",
+                "albumId": "a-001",
+                "albumTitle": "Test Album",
+                "releaseYear": 2024,
+                "hasContentId": false,
+                "albumArtwork": "https://example.com/art.jpg"
+            }}"#,
+            license
+        )
+    }
 
-        // Test non-creator-friendly
-        let song_not_friendly = Song {
-            id: "4".to_string(),
-            title: "Test".to_string(),
-            album_name: "Album".to_string(),
-            release_type: ReleaseType::Independent,
-            has_content_id: true,
-            streaming_link: "https://example.com".to_string(),
-            license: "All Rights Reserved".to_string(),
-        };
-        assert!(!is_creator_friendly(&song_not_friendly));
+    #[test]
+    fn test_is_creator_friendly_song_cc() {
+        assert!(is_creator_friendly_song(&make_song_view_json("CC BY 4.0")));
+    }
+
+    #[test]
+    fn test_is_creator_friendly_song_bgml_p() {
+        assert!(is_creator_friendly_song(&make_song_view_json("BGML-P")));
+    }
+
+    #[test]
+    fn test_is_creator_friendly_song_not_friendly() {
+        assert!(!is_creator_friendly_song(&make_song_view_json("All Rights Reserved")));
+        assert!(!is_creator_friendly_song(&make_song_view_json("")));
+    }
+
+    #[test]
+    fn test_filter_creator_friendly() {
+        let songs_json = r#"[
+            {
+                "id": "t-001",
+                "title": "CC Track",
+                "license": "CC BY 4.0",
+                "streamLink": "https://example.com",
+                "albumId": "a-001",
+                "albumTitle": "Album",
+                "releaseYear": 2024,
+                "hasContentId": false,
+                "albumArtwork": "https://example.com/art.jpg"
+            },
+            {
+                "id": "t-002",
+                "title": "ARR Track",
+                "license": "All Rights Reserved",
+                "streamLink": "https://example.com",
+                "albumId": "a-001",
+                "albumTitle": "Album",
+                "releaseYear": 2024,
+                "hasContentId": false,
+                "albumArtwork": "https://example.com/art.jpg"
+            },
+            {
+                "id": "t-003",
+                "title": "BGML-P Track",
+                "license": "BGML-P",
+                "streamLink": "https://example.com",
+                "albumId": "a-001",
+                "albumTitle": "Album",
+                "releaseYear": 2024,
+                "hasContentId": false,
+                "albumArtwork": "https://example.com/art.jpg"
+            }
+        ]"#;
+
+        let result = filter_creator_friendly(songs_json);
+        let filtered: Vec<SongView> = serde_json::from_str(&result).unwrap();
+        assert_eq!(filtered.len(), 2);
+        assert!(filtered.iter().any(|s| s.id == "t-001"));
+        assert!(filtered.iter().any(|s| s.id == "t-003"));
+        assert!(!filtered.iter().any(|s| s.id == "t-002"));
+    }
+
+    #[test]
+    fn test_filter_creator_friendly_empty() {
+        let result = filter_creator_friendly("[]");
+        let filtered: Vec<SongView> = serde_json::from_str(&result).unwrap();
+        assert_eq!(filtered.len(), 0);
     }
 }

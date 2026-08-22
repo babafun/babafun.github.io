@@ -1,21 +1,15 @@
 /**
  * TypeScript Data Loader (WASM Wrapper)
- * 
- * This module provides a high-level TypeScript interface for loading and validating
- * music data using the Rust/WASM backend for performance-critical operations.
- * 
- * The DataLoader class handles:
- * - Loading JSON data from files
- * - Validating data structure using WASM
- * - Grouping songs by album using WASM
- * - Error handling and type safety
+ *
+ * Loads and validates music data using the Rust/WASM backend.
+ * The data format is an album-first top-level array (Album[]).
  */
 
-import { Song, Album, MusicData } from '../types/music';
-import { initWasm, validateMusicData, groupByAlbum } from '../wasm/bindings';
+import type { Album, MusicData } from '../types/music';
+import { initWasmAsync, validateMusicData } from '../wasm/bindings';
 
 /**
- * Error thrown when data loading or validation fails
+ * Error thrown when data loading or validation fails.
  */
 export class DataLoaderError extends Error {
   constructor(message: string, public readonly cause?: Error) {
@@ -25,16 +19,93 @@ export class DataLoaderError extends Error {
 }
 
 /**
- * DataLoader class for loading and processing music data
- * Uses Rust/WASM for performance-critical validation and grouping operations
+ * JavaScript fallback: validates that data is an array of albums.
+ * Returns an error string if invalid, empty string if valid.
+ */
+function validateMusicDataJS(data: unknown): string {
+  try {
+    if (!Array.isArray(data)) {
+      return 'Music data must be a top-level array of albums';
+    }
+
+    for (let i = 0; i < data.length; i++) {
+      const album = data[i];
+      const err = validateAlbumJS(album);
+      if (err) {
+        return `Album ${i}: ${err}`;
+      }
+    }
+
+    // Check for duplicate album IDs
+    const albumIds = data.map((a: any) => a.id);
+    if (albumIds.length !== new Set(albumIds).size) {
+      return 'Duplicate album IDs found';
+    }
+
+    // Check for duplicate track IDs across all albums
+    const trackIds = data.flatMap((a: any) =>
+      Array.isArray(a.tracks) ? a.tracks.map((t: any) => t.id) : []
+    );
+    if (trackIds.length !== new Set(trackIds).size) {
+      return 'Duplicate track IDs found';
+    }
+
+    return '';
+  } catch (error) {
+    return `Validation error: ${error}`;
+  }
+}
+
+/**
+ * JavaScript fallback: validates a single album object.
+ */
+function validateAlbumJS(album: any): string {
+  if (!album || typeof album !== 'object') {
+    return 'Album must be an object';
+  }
+
+  const requiredFields = ['id', 'title', 'releaseYear', 'streamLink', 'hasContentId', 'albumArtwork', 'tracks'];
+  for (const field of requiredFields) {
+    if (!(field in album)) {
+      return `Missing required field: ${field}`;
+    }
+  }
+
+  if (typeof album.id !== 'string') return 'id must be a string';
+  if (typeof album.title !== 'string') return 'title must be a string';
+  if (typeof album.releaseYear !== 'number') return 'releaseYear must be a number';
+  if (typeof album.streamLink !== 'string') return 'streamLink must be a string';
+  if (typeof album.hasContentId !== 'boolean') return 'hasContentId must be a boolean';
+  if (typeof album.albumArtwork !== 'string') return 'albumArtwork must be a string';
+  if (!Array.isArray(album.tracks)) return 'tracks must be an array';
+
+  for (let i = 0; i < album.tracks.length; i++) {
+    const err = validateTrackJS(album.tracks[i]);
+    if (err) return `Track ${i}: ${err}`;
+  }
+
+  return '';
+}
+
+/**
+ * JavaScript fallback: validates a single track object.
+ */
+function validateTrackJS(track: any): string {
+  if (!track || typeof track !== 'object') return 'Track must be an object';
+  if (typeof track.id !== 'string') return 'id must be a string';
+  if (typeof track.title !== 'string') return 'title must be a string';
+  if (typeof track.license !== 'string') return 'license must be a string';
+  return '';
+}
+
+/**
+ * DataLoader class for loading and processing music data.
+ * Uses Rust/WASM for validation; falls back to JavaScript when WASM is unavailable.
  */
 export class DataLoader {
   private static instance: DataLoader | null = null;
   private wasmInitialized = false;
 
-  /**
-   * Get singleton instance of DataLoader
-   */
   public static getInstance(): DataLoader {
     if (!DataLoader.instance) {
       DataLoader.instance = new DataLoader();
@@ -42,42 +113,32 @@ export class DataLoader {
     return DataLoader.instance;
   }
 
-  /**
-   * Private constructor to enforce singleton pattern
-   */
   private constructor() {}
 
-  /**
-   * Initialize WASM module if not already initialized
-   */
   private async ensureWasmInitialized(): Promise<void> {
     if (!this.wasmInitialized) {
       try {
-        await initWasm();
+        await initWasmAsync();
         this.wasmInitialized = true;
       } catch (error) {
-        throw new DataLoaderError(
-          'Failed to initialize WASM module',
-          error instanceof Error ? error : new Error(String(error))
-        );
+        console.warn('WASM initialization failed, using JavaScript fallbacks:', error);
+        this.wasmInitialized = false;
       }
     }
   }
 
   /**
-   * Loads and validates music data from JSON file
-   * Uses Rust/WASM for validation performance
-   * 
+   * Loads and validates music data from a JSON file.
+   * Expects the file to contain a top-level array of Album objects.
+   *
    * @param jsonPath - Path to the JSON file (defaults to '/src/data/music.json')
-   * @returns Promise<MusicData> - Validated and processed music data
+   * @returns Promise<Album[]> - Validated album array
    * @throws DataLoaderError if loading or validation fails
    */
   public async loadMusicData(jsonPath: string = '/src/data/music.json'): Promise<MusicData> {
     try {
-      // Ensure WASM is initialized
       await this.ensureWasmInitialized();
 
-      // Fetch JSON data
       const response = await fetch(jsonPath);
       if (!response.ok) {
         throw new DataLoaderError(
@@ -86,9 +147,9 @@ export class DataLoader {
       }
 
       const jsonText = await response.text();
-      
-      // Parse JSON first
-      let rawData: { songs: Song[] };
+
+      // Parse JSON
+      let rawData: unknown;
       try {
         rawData = JSON.parse(jsonText);
       } catch (parseError) {
@@ -98,44 +159,25 @@ export class DataLoader {
         );
       }
 
-      // Validate that we have songs array
-      if (!rawData.songs || !Array.isArray(rawData.songs)) {
-        throw new DataLoaderError('Invalid data structure: missing or invalid songs array');
-      }
-
-      // Group albums using Rust/WASM for performance
-      const albumsJson = groupByAlbum(JSON.stringify(rawData.songs));
-      let albums: Album[];
+      // Validate using WASM or JS fallback
+      let validationError = '';
       try {
-        albums = JSON.parse(albumsJson);
-      } catch (parseError) {
-        throw new DataLoaderError(
-          'Failed to parse album grouping results',
-          parseError instanceof Error ? parseError : new Error(String(parseError))
-        );
+        if (this.wasmInitialized) {
+          validationError = validateMusicData(jsonText);
+        } else {
+          validationError = validateMusicDataJS(rawData);
+        }
+      } catch {
+        validationError = validateMusicDataJS(rawData);
       }
 
-      // Create complete MusicData structure for validation
-      const completeData = {
-        songs: rawData.songs,
-        albums: albums
-      };
-
-      // Validate the complete structure using Rust/WASM
-      const validationError = validateMusicData(JSON.stringify(completeData));
       if (validationError) {
         throw new DataLoaderError(`Data validation failed: ${validationError}`);
       }
 
-      // Return complete MusicData structure
-      return completeData;
-
+      return rawData as Album[];
     } catch (error) {
-      // Re-throw DataLoaderError as-is, wrap other errors
-      if (error instanceof DataLoaderError) {
-        throw error;
-      }
-      
+      if (error instanceof DataLoaderError) throw error;
       throw new DataLoaderError(
         'Unexpected error during data loading',
         error instanceof Error ? error : new Error(String(error))
@@ -144,19 +186,17 @@ export class DataLoader {
   }
 
   /**
-   * Validates a raw JSON string containing music data
-   * Uses Rust/WASM for validation performance
-   * 
+   * Validates a raw JSON string containing music data.
+   *
    * @param jsonText - Raw JSON string to validate
-   * @returns Promise<boolean> - true if valid, throws error if invalid
+   * @returns Promise<boolean> - true if valid
    * @throws DataLoaderError if validation fails
    */
   public async validateRawData(jsonText: string): Promise<boolean> {
     try {
       await this.ensureWasmInitialized();
-      
-      // Parse JSON first
-      let rawData: { songs: Song[] };
+
+      let rawData: unknown;
       try {
         rawData = JSON.parse(jsonText);
       } catch (parseError) {
@@ -166,41 +206,24 @@ export class DataLoader {
         );
       }
 
-      // Validate that we have songs array
-      if (!rawData.songs || !Array.isArray(rawData.songs)) {
-        throw new DataLoaderError('Invalid data structure: missing or invalid songs array');
-      }
-
-      // Group albums using Rust/WASM for performance
-      const albumsJson = groupByAlbum(JSON.stringify(rawData.songs));
-      let albums: Album[];
+      let validationError = '';
       try {
-        albums = JSON.parse(albumsJson);
-      } catch (parseError) {
-        throw new DataLoaderError(
-          'Failed to parse album grouping results',
-          parseError instanceof Error ? parseError : new Error(String(parseError))
-        );
+        if (this.wasmInitialized) {
+          validationError = validateMusicData(jsonText);
+        } else {
+          validationError = validateMusicDataJS(rawData);
+        }
+      } catch {
+        validationError = validateMusicDataJS(rawData);
       }
 
-      // Create complete MusicData structure for validation
-      const completeData = {
-        songs: rawData.songs,
-        albums: albums
-      };
-
-      // Validate the complete structure using Rust/WASM
-      const validationError = validateMusicData(JSON.stringify(completeData));
       if (validationError) {
         throw new DataLoaderError(`Validation failed: ${validationError}`);
       }
-      
+
       return true;
     } catch (error) {
-      if (error instanceof DataLoaderError) {
-        throw error;
-      }
-      
+      if (error instanceof DataLoaderError) throw error;
       throw new DataLoaderError(
         'Unexpected error during validation',
         error instanceof Error ? error : new Error(String(error))
@@ -209,32 +232,7 @@ export class DataLoader {
   }
 
   /**
-   * Groups an array of songs by album name
-   * Uses Rust/WASM for performance
-   * 
-   * @param songs - Array of songs to group
-   * @returns Promise<Album[]> - Array of albums with grouped songs
-   * @throws DataLoaderError if grouping fails
-   */
-  public async groupSongsByAlbum(songs: Song[]): Promise<Album[]> {
-    try {
-      await this.ensureWasmInitialized();
-      
-      const songsJson = JSON.stringify(songs);
-      const albumsJson = groupByAlbum(songsJson);
-      
-      const albums: Album[] = JSON.parse(albumsJson);
-      return albums;
-    } catch (error) {
-      throw new DataLoaderError(
-        'Failed to group songs by album',
-        error instanceof Error ? error : new Error(String(error))
-      );
-    }
-  }
-
-  /**
-   * Check if WASM module is initialized
+   * Check if WASM module is initialized.
    */
   public isWasmReady(): boolean {
     return this.wasmInitialized;
@@ -242,26 +240,17 @@ export class DataLoader {
 }
 
 /**
- * Convenience function to get DataLoader instance and load music data
- * 
- * @param jsonPath - Optional path to JSON file
- * @returns Promise<MusicData> - Loaded and validated music data
+ * Convenience function to load music data.
  */
 export async function loadMusicData(jsonPath?: string): Promise<MusicData> {
-  const loader = DataLoader.getInstance();
-  return loader.loadMusicData(jsonPath);
+  return DataLoader.getInstance().loadMusicData(jsonPath);
 }
 
 /**
- * Convenience function to validate raw JSON data
- * 
- * @param jsonText - Raw JSON string to validate
- * @returns Promise<boolean> - true if valid
+ * Convenience function to validate raw JSON data.
  */
 export async function validateMusicDataString(jsonText: string): Promise<boolean> {
-  const loader = DataLoader.getInstance();
-  return loader.validateRawData(jsonText);
+  return DataLoader.getInstance().validateRawData(jsonText);
 }
 
-// Export the DataLoader class as default
 export default DataLoader;

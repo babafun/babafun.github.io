@@ -11,6 +11,7 @@ import LicensesPage from './pages/LicensesPage';
 import SearchPage from './pages/SearchPage';
 import './styles/colors.css';
 import './styles/main.css';
+import './styles/music.css';
 
 function App() {
   return (

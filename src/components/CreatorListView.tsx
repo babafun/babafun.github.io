@@ -13,14 +13,17 @@
  */
 
 import React from 'react';
-import type { Song } from '../types/music';
+import type { SongView } from '../types/music';
 import { filterCreatorFriendly } from '../utils/filters';
-import { 
-  isCreatorFriendlySong, 
-  getCreatorFriendlyReason, 
+import {
+  isCreatorFriendlySong,
+  getCreatorFriendlyReason,
   shouldDisplayLicense,
-  getStreamingLinkText 
+  getStreamingLinkText
 } from '../utils/display';
+
+// Alias for backwards compatibility within this component
+type Song = SongView;
 
 /**
  * Props interface for CreatorListView component
@@ -49,7 +52,7 @@ const CreatorSongCard: React.FC<CreatorSongCardProps> = ({ song, reason }) => {
       <header className="song-header">
         <h3 id={`song-title-${song.id}`} className="song-title mb-1">{song.title}</h3>
         <p className="song-album text-muted">
-          from <em>{song.albumName}</em>
+          from <em>{song.albumTitle}</em>
         </p>
         
         <div className="creator-status mt-1">
@@ -68,16 +71,6 @@ const CreatorSongCard: React.FC<CreatorSongCardProps> = ({ song, reason }) => {
       </header>
 
       <div id={`song-details-${song.id}`} className="song-metadata mt-2">
-        <div className="metadata-row">
-          <strong>Release Type:</strong>
-          <span 
-            className={`badge ${song.releaseType.toLowerCase()} ml-1`}
-            aria-label={`Release type: ${song.releaseType}`}
-          >
-            {song.releaseType}
-          </span>
-        </div>
-
         <div className="metadata-row mt-1">
           <strong>Content ID:</strong>
           <span 
@@ -108,13 +101,13 @@ const CreatorSongCard: React.FC<CreatorSongCardProps> = ({ song, reason }) => {
 
       <footer className="song-actions mt-2">
         <a 
-          href={song.streamingLink}
+          href={song.streamLink}
           target="_blank"
           rel="noopener noreferrer"
           className="streaming-link"
           aria-label={`Listen to ${song.title} on streaming platform - creator-friendly music (opens in new tab)`}
         >
-          {getStreamingLinkText(song.streamingLink)}
+          {getStreamingLinkText(song.streamLink)}
           <span aria-hidden="true"> ↗</span>
         </a>
       </footer>
@@ -151,13 +144,11 @@ interface CreatorStatsProps {
 }
 
 const CreatorStats: React.FC<CreatorStatsProps> = ({ totalSongs, creatorFriendlySongs }) => {
-  // Count by release type
-  const ncsCount = creatorFriendlySongs.filter(song => song.releaseType === 'NCS').length;
-  const ccCount = creatorFriendlySongs.filter(song => 
-    song.releaseType !== 'NCS' && 
-    (song.license.toLowerCase().includes('cc') || song.license.toLowerCase().includes('bgml-p'))
+  // Count by license type
+  const ccCount = creatorFriendlySongs.filter(song =>
+    song.license.toLowerCase().includes('cc') || song.license.toLowerCase().includes('bgml-p')
   ).length;
-  
+
   const percentage = totalSongs > 0 ? Math.round((creatorFriendlySongs.length / totalSongs) * 100) : 0;
 
   return (
@@ -171,11 +162,6 @@ const CreatorStats: React.FC<CreatorStatsProps> = ({ totalSongs, creatorFriendly
         
         {creatorFriendlySongs.length > 0 && (
           <div className="stats-breakdown mt-1" role="group" aria-label="Breakdown by license type">
-            {ncsCount > 0 && (
-              <span className="badge ncs mr-1" aria-label={`${ncsCount} NCS releases`}>
-                {ncsCount} NCS
-              </span>
-            )}
             {ccCount > 0 && (
               <span className="badge success mr-1" aria-label={`${ccCount} open license songs`}>
                 {ccCount} Open License
@@ -228,9 +214,9 @@ export const CreatorListView: React.FC<CreatorListViewProps> = ({ songs }) => {
     );
   }
 
-  // Group songs by release type for better organization
+  // Group songs by license type for better organization
   const songsByType = creatorFriendlySongs.reduce((groups, song) => {
-    const type = song.releaseType === 'NCS' ? 'NCS Releases' : 'Open License';
+    const type = 'Open License';
     if (!groups[type]) {
       groups[type] = [];
     }

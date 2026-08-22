@@ -84,39 +84,54 @@ music-portfolio/
 
 ### Data Models
 
-#### Song Interface
+#### Track Interface
 
 ```typescript
-interface Song {
-  id: string;                    // Unique identifier for routing
-  title: string;                 // Song title
-  albumName: string;             // Album this song belongs to
-  releaseType: ReleaseType;      // Independent, NCS, or Monstercat
-  hasContentId: boolean;         // Whether song has Content ID
-  streamingLink: string;         // URL to streaming platform
-  license: string;               // License type (can be empty string)
-  releaseYear: number;           // Year of release for sorting
-  albumArtwork: string;          // URL to album cover image
+interface Track {
+  id: string;                        // Unique identifier for routing
+  title: string;                     // Song title
+  license: string;                   // License type (can be empty string)
+  overrideStreamLink?: string;       // Optional song-specific stream link
 }
-
-type ReleaseType = 'Independent' | 'NCS' | 'Monstercat';
 ```
 
 #### Album Interface
 
 ```typescript
 interface Album {
-  name: string;                  // Album name
-  songs: Song[];                 // Songs in this album
+  id: string;                        // Unique identifier for routing
+  title: string;                     // Album title
+  releaseYear: number;               // Year of release for sorting
+  streamLink: string;                // Default streaming URL for the whole release
+  hasContentId: boolean;             // Whether the release has Content ID
+  releaseLabel?: string;             // Optional label name (omit or empty = self-release)
+  albumArtwork: string;              // URL to album cover image
+  tracks: Track[];                   // Songs in this album
 }
 ```
 
 #### MusicData Interface
 
 ```typescript
-interface MusicData {
-  songs: Song[];                 // All songs in the portfolio
-  albums: Album[];               // Derived: songs grouped by album
+// The top-level music.json value is simply an array of albums
+type MusicData = Album[];
+```
+
+#### Derived Song Interface (for search/filter views)
+
+```typescript
+// Flattened view of a track with its parent album context, used internally
+interface SongView {
+  id: string;
+  title: string;
+  license: string;
+  streamLink: string;          // Resolved: overrideStreamLink ?? album.streamLink
+  albumId: string;
+  albumTitle: string;
+  releaseYear: number;
+  hasContentId: boolean;
+  releaseLabel?: string;
+  albumArtwork: string;
 }
 ```
 
@@ -128,22 +143,27 @@ interface MusicData {
 // rust/src/lib.rs
 // All performance-critical operations compiled to WebAssembly
 
-/// Validates song structure and types
+/// Validates a single track object
 /// Returns true if valid, false otherwise
 #[wasm_bindgen]
-pub fn validate_song(song_json: &str) -> bool
+pub fn validate_track(track_json: &str) -> bool
 
-/// Validates entire music data structure
+/// Validates a single album object (including its tracks)
+/// Returns error message if invalid, empty string if valid
+#[wasm_bindgen]
+pub fn validate_album(album_json: &str) -> String
+
+/// Validates entire music data (array of albums)
 /// Returns error message if invalid, empty string if valid
 #[wasm_bindgen]
 pub fn validate_music_data(data_json: &str) -> String
 
-/// Groups songs by album name
-/// Returns JSON string of grouped albums
+/// Flattens albums into a list of SongView objects (resolves streamLink)
+/// Returns JSON string of flattened songs
 #[wasm_bindgen]
-pub fn group_by_album(songs_json: &str) -> String
+pub fn flatten_songs(albums_json: &str) -> String
 
-/// Filters songs to only creator-friendly ones
+/// Filters flattened songs to only creator-friendly ones
 /// Returns JSON string of filtered songs
 #[wasm_bindgen]
 pub fn filter_creator_friendly(songs_json: &str) -> String
@@ -156,9 +176,9 @@ pub fn is_commercial_cc_license(license: &str) -> bool
 #[wasm_bindgen]
 pub fn is_bgml_p_license(license: &str) -> bool
 
-/// Batch validates multiple songs (optimized)
+/// Batch validates all albums (optimized)
 #[wasm_bindgen]
-pub fn batch_validate_songs(songs_json: &str) -> String
+pub fn batch_validate_albums(albums_json: &str) -> String
 ```
 
 #### TypeScript Data Loader (WASM Wrapper)
@@ -173,7 +193,7 @@ class DataLoader {
    * Uses Rust/WASM for validation performance
    * Throws error if validation fails
    */
-  async loadMusicData(): Promise<MusicData> {
+  async loadMusicData(): Promise<Album[]> {
     const response = await fetch('/src/data/music.json');
     const jsonText = await response.text();
     
@@ -183,13 +203,7 @@ class DataLoader {
       throw new Error(validationError);
     }
     
-    const data = JSON.parse(jsonText);
-    
-    // Group albums using Rust/WASM
-    const albumsJson = wasm.group_by_album(JSON.stringify(data.songs));
-    const albums = JSON.parse(albumsJson);
-    
-    return { songs: data.songs, albums };
+    return JSON.parse(jsonText) as Album[];
   }
 }
 ```
@@ -390,47 +404,61 @@ function CreatorListView(props: CreatorListViewProps): JSX.Element
 
 ### JSON Data Structure
 
-The `music.json` file follows this structure with album artwork:
+The `music.json` file is a top-level array of album objects:
 
 ```json
-{
-  "songs": [
-    {
-      "id": "song-001",
-      "title": "Example Song",
-      "albumName": "Example Album",
-      "releaseType": "Independent",
-      "hasContentId": false,
-      "streamingLink": "https://push.fm/song",
-      "license": "CC BY 4.0",
-      "releaseYear": 2023,
-      "albumArtwork": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f"
-    },
-    {
-      "id": "song-002",
-      "title": "Another Song",
-      "albumName": "Example Album",
-      "releaseType": "NCS",
-      "hasContentId": false,
-      "streamingLink": "https://example.com/song2",
-      "license": "",
-      "releaseYear": 2024,
-      "albumArtwork": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f"
-    }
-  ]
-}
+[
+  {
+    "id": "album-001",
+    "title": "Example Album",
+    "releaseYear": 2026,
+    "streamLink": "https://push.fm/example-album",
+    "hasContentId": false,
+    "albumArtwork": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f",
+    "tracks": [
+      {
+        "id": "track-001",
+        "title": "Song One",
+        "license": "CC BY 4.0"
+      },
+      {
+        "id": "track-002",
+        "title": "Song Two",
+        "license": "",
+        "overrideStreamLink": "https://push.fm/song-two-specific"
+      }
+    ]
+  },
+  {
+    "id": "album-002",
+    "title": "Another Release",
+    "releaseYear": 2025,
+    "streamLink": "https://push.fm/another-release",
+    "hasContentId": false,
+    "releaseLabel": "My Label Name",
+    "albumArtwork": "https://images.unsplash.com/photo-1571330735066-03aaa9429d89",
+    "tracks": [
+      {
+        "id": "track-003",
+        "title": "Track Three",
+        "license": "BGML-P"
+      }
+    ]
+  }
+]
 ```
 
 ### Validation Rules
 
-1. **Required Fields**: All fields in Song interface must be present (including releaseYear and albumArtwork)
-2. **Release Type**: Must be one of: 'Independent', 'NCS', 'Monstercat'
-3. **Content ID**: Must be boolean (true/false)
-4. **Streaming Link**: Must be valid URL string
-5. **License**: Can be empty string, but field must exist
-6. **ID**: Must be unique across all songs for routing
-7. **Release Year**: Must be valid 4-digit year
-8. **Album Artwork**: Must be valid URL string
+1. **Required Album Fields**: `id`, `title`, `releaseYear`, `streamLink`, `hasContentId`, `albumArtwork`, `tracks`
+2. **Optional Album Fields**: `releaseLabel` (absent or empty string = self-release)
+3. **Required Track Fields**: `id`, `title`, `license` (may be empty string)
+4. **Optional Track Fields**: `overrideStreamLink`
+5. **Content ID**: Must be boolean (true/false) at album level
+6. **Stream Links**: Must be valid URL strings
+7. **IDs**: Must be unique across all albums; track IDs must be unique across all tracks globally
+8. **Release Year**: Must be valid 4-digit year
+9. **Album Artwork**: Must be valid URL string
 
 ### Creator-Friendly Criteria
 
@@ -441,9 +469,7 @@ A song is considered creator-friendly if ANY of these conditions are true:
    - CC BY-SA (any version)
    - CC0 (public domain)
 
-2. **NCS Release**: Release type is 'NCS'
-
-3. **BGML-P License**: License string is 'BGML-P'
+2. **BGML-P License**: License string is 'BGML-P'
 
 ### License String Patterns
 
@@ -677,93 +703,145 @@ body {
 
 
 
+## Song CLI Tool
+
+### Overview
+
+`scripts/add_song.py` is a Python script for interactively adding songs to `src/data/music.json`. It uses `questionary` (or `prompt_toolkit`) for interactive prompts with fuzzy-find album selection.
+
+### Dependencies
+
+```
+questionary   # pip install questionary
+```
+
+### Interaction Flow
+
+```
+Song title: <user types>
+
+Add to album (type to filter, ↑↓ to navigate, Enter to select):
+  > Existing Album One
+    Existing Album Two
+    + Create new album "typed name"
+
+[If existing album selected]
+  Is the streaming link specific to this song, or for the whole release?
+  > Song-specific link
+    Whole release link
+
+  Streaming link: <user types>
+  License (leave blank if none): <user types>
+
+[If new album selected]
+  Album stream link: <user types>
+  Release year: <user types>
+  Has Content ID? (y/n): <user types>
+  Album artwork URL: <user types>
+  Release label (leave blank for self-release): <user types>
+
+  Is the streaming link specific to this song, or for the whole release?
+  > Song-specific link
+    Whole release link
+
+  License (leave blank if none): <user types>
+
+Add another song? (y/n): <user types>
+```
+
+### ID Generation
+
+Track IDs are generated by slugifying the song title: lowercase, spaces to hyphens, non-alphanumeric characters removed. If a collision exists, a numeric suffix is appended (e.g. `my-song-2`).
+
+Album IDs follow the same pattern from the album title.
+
+### File Location
+
+```
+devtools/
+└── add_song.py
+```
+
 ## Correctness Properties
 
 A property is a characteristic or behavior that should hold true across all valid executions of a system—essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees.
 
-### Property 1: Song Data Validation
+### Property 1: Album Data Validation
 
 **Validates: Requirements 2.2, 2.3, 2.4, 2.5**
 
-*For any* object claiming to be a Song, the validation function should accept it if and only if it contains all required fields (id, title, albumName, releaseType, hasContentId, streamingLink, license) with correct types.
+*For any* object claiming to be an Album, the validation function should accept it if and only if it contains all required fields with correct types.
 
 ```typescript
-property("Song validation accepts valid songs and rejects invalid ones", 
+property("Album validation accepts valid albums and rejects invalid ones", 
   forAll(arbitrary.object(), (obj) => {
-    const isValid = validateSong(obj);
+    const isValid = validateAlbum(obj);
     const hasAllFields = 
       typeof obj.id === 'string' &&
       typeof obj.title === 'string' &&
-      typeof obj.albumName === 'string' &&
-      ['Independent', 'NCS', 'Monstercat'].includes(obj.releaseType) &&
+      typeof obj.releaseYear === 'number' &&
+      typeof obj.streamLink === 'string' &&
       typeof obj.hasContentId === 'boolean' &&
-      typeof obj.streamingLink === 'string' &&
-      typeof obj.license === 'string';
+      typeof obj.albumArtwork === 'string' &&
+      Array.isArray(obj.tracks);
     
     return isValid === hasAllFields;
   })
 );
 ```
 
-### Property 2: Album Grouping Preserves Songs
+### Property 2: Flatten Preserves All Tracks
 
-**Validates: Requirements 3.1, 3.2**
+**Validates: Requirements 2.1, 4.1**
 
-*For any* list of songs, grouping them by album should preserve all songs without duplication or loss.
+*For any* list of albums, flattening them into SongView objects should preserve all tracks without duplication or loss.
 
 ```typescript
-property("Album grouping preserves all songs", 
-  forAll(arbitrary.array(arbitrary.song()), (songs) => {
-    const albums = groupByAlbum(songs);
-    const allSongsInAlbums = albums.flatMap(album => album.songs);
+property("Flatten preserves all tracks", 
+  forAll(arbitrary.array(arbitrary.album()), (albums) => {
+    const songs = flattenSongs(albums);
+    const totalTracks = albums.reduce((n, a) => n + a.tracks.length, 0);
     
-    // Same number of songs
-    const countPreserved = allSongsInAlbums.length === songs.length;
-    
-    // All original songs present
-    const allPresent = songs.every(song => 
-      allSongsInAlbums.some(s => s.id === song.id)
-    );
-    
-    return countPreserved && allPresent;
+    return songs.length === totalTracks;
   })
 );
 ```
 
-### Property 3: Album Grouping Correctness
+### Property 3: Stream Link Resolution
 
-**Validates: Requirements 3.1, 3.2**
+**Validates: Requirement 6.5, 6.6**
 
-*For any* list of songs grouped into albums, all songs within an album should have the same album name.
+*For any* track, the resolved stream link should be the track's `overrideStreamLink` if present, otherwise the album's `streamLink`.
 
 ```typescript
-property("Songs in an album share the same album name", 
-  forAll(arbitrary.array(arbitrary.song()), (songs) => {
-    const albums = groupByAlbum(songs);
+property("Stream link resolves correctly", 
+  forAll(arbitrary.album(), (album) => {
+    const songs = flattenSongs([album]);
     
-    return albums.every(album => 
-      album.songs.every(song => song.albumName === album.name)
-    );
+    return songs.every(song => {
+      const track = album.tracks.find(t => t.id === song.id)!;
+      const expected = track.overrideStreamLink ?? album.streamLink;
+      return song.streamLink === expected;
+    });
   })
 );
 ```
 
 ### Property 4: Creator-Friendly Filter Correctness
 
-**Validates: Requirements 5.2, 5.3, 5.4, 5.5**
+**Validates: Requirements 7.2, 7.3**
 
-*For any* song, it should be included in the creator-friendly list if and only if it meets at least one of the criteria: CC commercial license, NCS release, or BGML-P license.
+*For any* song, it should be included in the creator-friendly list if and only if it meets at least one of the criteria: CC commercial license or BGML-P license.
 
 ```typescript
 property("Creator-friendly filter includes correct songs", 
-  forAll(arbitrary.song(), (song) => {
+  forAll(arbitrary.songView(), (song) => {
     const isIncluded = isCreatorFriendly(song);
     
     const hasCommercialCC = isCommercialCCLicense(song.license);
-    const isNCS = song.releaseType === 'NCS';
     const isBGMLP = isBGMLPLicense(song.license);
     
-    const shouldBeIncluded = hasCommercialCC || isNCS || isBGMLP;
+    const shouldBeIncluded = hasCommercialCC || isBGMLP;
     
     return isIncluded === shouldBeIncluded;
   })
@@ -806,19 +884,20 @@ property("Creator list is subset of all songs",
 );
 ```
 
-### Property 7: Unique Song IDs
+### Property 7: Unique IDs
 
 **Validates: Requirements 2.7**
 
-*For any* valid music data, all song IDs should be unique.
+*For any* valid music data, all album IDs and all track IDs should each be unique.
 
 ```typescript
-property("All song IDs are unique", 
-  forAll(arbitrary.musicData(), (musicData) => {
-    const ids = musicData.songs.map(song => song.id);
-    const uniqueIds = new Set(ids);
+property("All album and track IDs are unique", 
+  forAll(arbitrary.musicData(), (albums) => {
+    const albumIds = albums.map(a => a.id);
+    const trackIds = albums.flatMap(a => a.tracks.map(t => t.id));
     
-    return ids.length === uniqueIds.size;
+    return albumIds.length === new Set(albumIds).size &&
+           trackIds.length === new Set(trackIds).size;
   })
 );
 ```

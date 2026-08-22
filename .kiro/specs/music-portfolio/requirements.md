@@ -7,7 +7,7 @@ This document specifies the requirements for a multi-section music portfolio web
 ## Glossary
 
 - **System**: The music portfolio website application with multi-section routing
-- **Music_Data_Store**: JSON file containing song and album information with artwork URLs
+- **Music_Data_Store**: JSON file containing album and song information with artwork URLs, structured as a list of albums
 - **Navbar**: Top navigation component with HOME, MUSIC, CODE, LICENSES sections
 - **Music_Homepage**: Landing page for music section with discography access
 - **Discography_Page**: Display showing albums with artwork in full-width layout
@@ -17,17 +17,17 @@ This document specifies the requirements for a multi-section music portfolio web
 - **Song_Detail_View**: Display mode showing complete information for individual songs
 - **Creator_List_View**: Filtered display showing only songs free for creators to use
 - **Content_ID**: YouTube's Content ID system that can claim revenue on videos using the music
-- **Release_Type**: Classification of song release (Independent, NCS, or Monstercat)
-- **License**: Legal terms under which the song can be used
-- **CC_License**: specific type of license - Creative Commons license allowing commercial use
-- **NCS_Release**: No Copyright Sounds release (free for creators)
-- **BGML_P_License**: Babafun Game Music License (the Babafun Game Music licenses will be part of a different section of the website) - Permissive variant
-- **Streaming_Link**: URL to music streaming platforms for the song
+- **Release_Label**: Optional label or distributor associated with an album (e.g. a self-release label name). Stored at the album level.
+- **License**: Legal terms under which a song can be used
+- **CC_License**: Specific type of license — Creative Commons license allowing commercial use
+- **BGML_P_License**: Babafun Game Music License (the Babafun Game Music licenses will be part of a different section of the website) — Permissive variant
+- **Stream_Link**: URL to music streaming platforms. Stored at the album level; individual songs may optionally override it with a song-specific link via `overrideStreamLink`.
 - **Album_Artwork**: URL to album cover image for visual display
 - **Color_Scheme**: CSS custom properties defining the visual theme with purple-to-blue gradients
 - **Interactive_Background**: Animated gradient background with mouse-following spotlight effect
 - **UI_Component**: React component for dynamic content rendering
 - **Router**: React Router system for navigation between pages
+- **Song_CLI**: Python command-line script for interactively adding songs to the Music_Data_Store
 
 ## Requirements
 
@@ -45,17 +45,17 @@ This document specifies the requirements for a multi-section music portfolio web
 
 ### Requirement 2: Music Data Management
 
-**User Story:** As a content manager, I want to store music data in a simple JSON file with album artwork, so that I can easily update my discography without database complexity.
+**User Story:** As a content manager, I want to store music data in a simple JSON file structured by albums, so that I can easily update my discography without database complexity.
 
 #### Acceptance Criteria
 
-1. THE Music_Data_Store SHALL be a JSON file containing all song and album information
-2. WHEN a song entry is created, THE Music_Data_Store SHALL include album name, release type, Content ID status, streaming link, license, release year, and album artwork URL fields
-3. THE Music_Data_Store SHALL support three release types: Independent, NCS, and Monstercat
-4. THE Music_Data_Store SHALL store Content ID status as a boolean value
-5. THE Music_Data_Store SHALL allow license field to be an empty string
-6. THE Music_Data_Store SHALL include release year for sorting functionality
-7. THE Music_Data_Store SHALL include album artwork URLs for visual display
+1. THE Music_Data_Store SHALL be a JSON file whose top-level value is a list of album objects
+2. EACH album object SHALL contain: a unique album id, title, releaseYear, streamLink, hasContentId (boolean), releaseLabel (optional string), albumArtwork URL, and a tracks array
+3. EACH track in the tracks array SHALL contain: a unique id, title, and license (string, may be empty)
+4. A track MAY optionally include an `overrideStreamLink` field; when present it takes precedence over the album-level `streamLink` for that song
+5. THE Music_Data_Store SHALL store Content ID status as a boolean at the album level
+6. THE Music_Data_Store SHALL allow the license field on a track to be an empty string
+7. THE Music_Data_Store SHALL allow the releaseLabel field on an album to be absent or an empty string (representing a self-release)
 8. THE System SHALL load and parse the Music_Data_Store at application startup
 9. THE System SHALL validate the structure of the Music_Data_Store on load
 
@@ -113,15 +113,17 @@ This document specifies the requirements for a multi-section music portfolio web
 
 #### Acceptance Criteria
 
-1. THE Song_Detail_View SHALL display the song's album name
-2. THE Song_Detail_View SHALL display the song's release type
-3. THE Song_Detail_View SHALL display the song's Content ID status
-4. THE Song_Detail_View SHALL display the song's streaming link as a clickable element
-5. THE Song_Detail_View SHALL display the song's release year
-6. THE Song_Detail_View SHALL display the album artwork
-7. WHEN a song has a non-empty license field, THE Song_Detail_View SHALL display the license information
-8. WHEN a song has an empty license field, THE Song_Detail_View SHALL omit the license from display
-9. THE Song_Detail_View SHALL format all information in a clear, readable layout
+1. THE Song_Detail_View SHALL display the song's album title
+2. THE Song_Detail_View SHALL display the album's release label (if present)
+3. THE Song_Detail_View SHALL display the album's Content ID status
+4. THE Song_Detail_View SHALL display a streaming link as a clickable element
+5. WHEN a song has an `overrideStreamLink`, THE Song_Detail_View SHALL use that link
+6. WHEN a song does not have an `overrideStreamLink`, THE Song_Detail_View SHALL use the album-level `streamLink`
+7. THE Song_Detail_View SHALL display the album's release year
+8. THE Song_Detail_View SHALL display the album artwork
+9. WHEN a song has a non-empty license field, THE Song_Detail_View SHALL display the license information
+10. WHEN a song has an empty license field, THE Song_Detail_View SHALL omit the license from display
+11. THE Song_Detail_View SHALL format all information in a clear, readable layout
 
 ### Requirement 7: Creator-Friendly List
 
@@ -131,10 +133,9 @@ This document specifies the requirements for a multi-section music portfolio web
 
 1. THE Creator_List_View SHALL display only songs that are free for creators to use
 2. WHEN filtering songs, THE Creator_List_View SHALL include all songs with CC licenses allowing commercial use
-3. WHEN filtering songs, THE Creator_List_View SHALL include all songs with NCS release type
-4. WHEN filtering songs, THE Creator_List_View SHALL include all songs with BGML_P_License
-5. THE Creator_List_View SHALL exclude songs that do not meet the creator-friendly criteria
-6. THE Creator_List_View SHALL display the same song information as Song_Detail_View for included songs
+3. WHEN filtering songs, THE Creator_List_View SHALL include all songs with BGML_P_License
+4. THE Creator_List_View SHALL exclude songs that do not meet the creator-friendly criteria
+5. THE Creator_List_View SHALL display the same song information as Song_Detail_View for included songs
 
 ### Requirement 8: Visual Styling and Interactive Design
 
@@ -207,3 +208,25 @@ This document specifies the requirements for a multi-section music portfolio web
 4. WHEN switching between views, THE System SHALL respond without noticeable delay
 5. THE System SHALL lazy-load UI_Components where appropriate
 6. THE System MUST use Rust for any computation-heavy parts of the code
+
+### Requirement 13: Song CLI Tool
+
+**User Story:** As the site owner, I want a Python script I can run locally to add songs to my discography, so that I don't have to manually edit JSON.
+
+#### Acceptance Criteria
+
+1. THE Song_CLI SHALL be a Python script located at `devtools/add_song.py`
+2. WHEN run, THE Song_CLI SHALL prompt for the song title
+3. THE Song_CLI SHALL then present a fuzzy-searchable list of existing album titles using keyboard up/down navigation and Enter to confirm
+4. WHEN the user types, THE Song_CLI SHALL filter the album list in real-time (fuzzy match)
+5. WHEN no albums match the typed input, THE Song_CLI SHALL show an option to create a new album with the typed name
+6. WHEN the user selects an existing album, THE Song_CLI SHALL add the song to that album's tracks array
+7. WHEN the user selects "new album", THE Song_CLI SHALL prompt for: streamLink, releaseYear, hasContentId (y/n), albumArtwork URL, and optionally a releaseLabel
+8. THE Song_CLI SHALL ask whether the streaming link is specific to this song or for the whole release
+9. WHEN the link is song-specific, THE Song_CLI SHALL store it as `overrideStreamLink` on the track
+10. WHEN the link is for the whole release, THE Song_CLI SHALL store it as the album-level `streamLink` (or skip if album already has one)
+11. THE Song_CLI SHALL prompt for the song's license (may be left blank)
+12. THE Song_CLI SHALL generate a unique track id based on the song title (slugified)
+13. THE Song_CLI SHALL write the updated data back to `src/data/music.json`
+14. THE Song_CLI SHALL support adding multiple songs in a single session by asking "Add another song?" after each addition
+15. THE Song_CLI SHALL require only Python standard library plus one fuzzy-find/interactive selection library (e.g. `prompt_toolkit` or `questionary`)

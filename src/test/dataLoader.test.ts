@@ -1,44 +1,42 @@
 /**
  * Test file for DataLoader functionality
- * This tests the integration between TypeScript and WASM
+ * Tests the integration between TypeScript and WASM with the album-first data model.
  */
 
 import { describe, it, expect, beforeAll, vi } from 'vitest';
 import { DataLoader, loadMusicData, DataLoaderError } from '../utils/dataLoader';
-import { MusicData } from '../types/music';
+import type { MusicData } from '../types/music';
 
-// Mock fetch for testing
-const mockMusicData = {
-  songs: [
-    {
-      id: "song-001",
-      title: "Digital Dreams",
-      albumName: "Synthwave Chronicles",
-      releaseType: "Independent" as const,
-      hasContentId: false,
-      streamingLink: "https://push.fm/digital-dreams",
-      license: "CC BY 4.0"
-    },
-    {
-      id: "song-002",
-      title: "Neon Nights",
-      albumName: "Synthwave Chronicles",
-      releaseType: "Independent" as const,
-      hasContentId: true,
-      streamingLink: "https://push.fm/neon-nights",
-      license: "All Rights Reserved"
-    },
-    {
-      id: "song-003",
-      title: "Electric Pulse",
-      albumName: "Electronic Fusion",
-      releaseType: "NCS" as const,
-      hasContentId: false,
-      streamingLink: "https://ncs.io/electric-pulse",
-      license: ""
-    }
-  ]
-};
+// Mock music data — album-first top-level array
+const mockMusicData = [
+  {
+    id: 'neon-drift',
+    title: 'Neon Drift',
+    releaseYear: 2024,
+    streamLink: 'https://push.fm/fl/babafun-neon-drift',
+    hasContentId: false,
+    albumArtwork: 'https://images.unsplash.com/photo-1',
+    tracks: [
+      { id: 'neon-drift-title-track', title: 'Neon Drift', license: 'CC BY 4.0' },
+      { id: 'pixel-highway', title: 'Pixel Highway', license: 'CC BY 4.0',
+        overrideStreamLink: 'https://push.fm/fl/babafun-pixel-highway' }
+    ]
+  },
+  {
+    id: 'dungeon-frequencies',
+    title: 'Dungeon Frequencies',
+    releaseYear: 2023,
+    streamLink: 'https://push.fm/fl/babafun-dungeon-frequencies',
+    hasContentId: true,
+    releaseLabel: '8-Bit Collective',
+    albumArtwork: 'https://images.unsplash.com/photo-2',
+    tracks: [
+      { id: 'dungeon-entrance', title: 'Dungeon Entrance', license: 'BGML-P' },
+      { id: 'boss-encounter', title: 'Boss Encounter', license: 'BGML-P',
+        overrideStreamLink: 'https://push.fm/fl/babafun-boss-encounter' }
+    ]
+  }
+];
 
 // Mock fetch globally
 global.fetch = vi.fn();
@@ -48,8 +46,7 @@ describe('DataLoader', () => {
 
   beforeAll(() => {
     dataLoader = DataLoader.getInstance();
-    
-    // Setup fetch mock
+
     (global.fetch as any).mockImplementation((url: string) => {
       if (url.includes('music.json')) {
         return Promise.resolve({
@@ -69,148 +66,73 @@ describe('DataLoader', () => {
     expect(instance1).toBe(instance2);
   });
 
-  it('should load and validate music data', async () => {
+  it('should load and validate music data as Album[]', async () => {
     const musicData: MusicData = await dataLoader.loadMusicData();
-    
-    // Check structure
-    expect(musicData).toHaveProperty('songs');
-    expect(musicData).toHaveProperty('albums');
-    expect(Array.isArray(musicData.songs)).toBe(true);
-    expect(Array.isArray(musicData.albums)).toBe(true);
-    
-    // Check that we have data
-    expect(musicData.songs.length).toBeGreaterThan(0);
-    expect(musicData.albums.length).toBeGreaterThan(0);
-    
-    // Check song structure
-    const firstSong = musicData.songs[0];
-    expect(firstSong).toHaveProperty('id');
-    expect(firstSong).toHaveProperty('title');
-    expect(firstSong).toHaveProperty('albumName');
-    expect(firstSong).toHaveProperty('releaseType');
-    expect(firstSong).toHaveProperty('hasContentId');
-    expect(firstSong).toHaveProperty('streamingLink');
-    expect(firstSong).toHaveProperty('license');
-    
-    // Check album structure
-    const firstAlbum = musicData.albums[0];
-    expect(firstAlbum).toHaveProperty('name');
-    expect(firstAlbum).toHaveProperty('songs');
-    expect(Array.isArray(firstAlbum.songs)).toBe(true);
-  });
 
-  it('should group songs by album correctly', async () => {
-    const musicData: MusicData = await dataLoader.loadMusicData();
-    
-    // Check that all songs in an album have the same album name
-    for (const album of musicData.albums) {
-      for (const song of album.songs) {
-        expect(song.albumName).toBe(album.name);
-      }
-    }
-    
-    // Check that all songs are preserved
-    const totalSongsInAlbums = musicData.albums.reduce((sum, album) => sum + album.songs.length, 0);
-    expect(totalSongsInAlbums).toBe(musicData.songs.length);
+    // New model: MusicData is Album[]
+    expect(Array.isArray(musicData)).toBe(true);
+    expect(musicData.length).toBeGreaterThan(0);
+
+    // Check album structure
+    const firstAlbum = musicData[0];
+    expect(firstAlbum).toHaveProperty('id');
+    expect(firstAlbum).toHaveProperty('title');
+    expect(firstAlbum).toHaveProperty('releaseYear');
+    expect(firstAlbum).toHaveProperty('streamLink');
+    expect(firstAlbum).toHaveProperty('hasContentId');
+    expect(firstAlbum).toHaveProperty('albumArtwork');
+    expect(firstAlbum).toHaveProperty('tracks');
+    expect(Array.isArray(firstAlbum.tracks)).toBe(true);
+
+    // Check track structure
+    const firstTrack = firstAlbum.tracks[0];
+    expect(firstTrack).toHaveProperty('id');
+    expect(firstTrack).toHaveProperty('title');
+    expect(firstTrack).toHaveProperty('license');
   });
 
   it('should handle invalid JSON path gracefully', async () => {
-    // Mock fetch to return 404
-    (global.fetch as any).mockImplementationOnce(() => 
+    (global.fetch as any).mockImplementationOnce(() =>
       Promise.resolve({
         ok: false,
         status: 404,
         statusText: 'Not Found'
       })
     );
-    
+
     await expect(dataLoader.loadMusicData('/nonexistent/path.json'))
       .rejects.toThrow(DataLoaderError);
   });
 
-  it('should validate raw JSON data', async () => {
-    const validJson = JSON.stringify({
-      songs: [
-        {
-          id: "test-001",
-          title: "Test Song",
-          albumName: "Test Album",
-          releaseType: "Independent",
-          hasContentId: false,
-          streamingLink: "https://example.com/test",
-          license: "CC BY 4.0"
-        }
-      ]
-    });
-    
+  it('should validate raw JSON data (valid album array)', async () => {
+    const validJson = JSON.stringify(mockMusicData);
     const result = await dataLoader.validateRawData(validJson);
     expect(result).toBe(true);
   });
 
-  it('should reject invalid JSON data', async () => {
+  it('should reject invalid JSON data (old songs-object format)', async () => {
     const invalidJson = JSON.stringify({
-      songs: [
-        {
-          id: "test-001",
-          title: "Test Song",
-          // Missing required fields
-        }
-      ]
+      songs: [{ id: 'test', title: 'Test' }]
     });
-    
+
     await expect(dataLoader.validateRawData(invalidJson))
       .rejects.toThrow(DataLoaderError);
   });
 
-  it('should group songs by album using WASM', async () => {
-    const testSongs = [
-      {
-        id: "song-1",
-        title: "Song 1",
-        albumName: "Album A",
-        releaseType: "Independent" as const,
-        hasContentId: false,
-        streamingLink: "https://example.com/1",
-        license: "CC BY 4.0"
-      },
-      {
-        id: "song-2",
-        title: "Song 2",
-        albumName: "Album A",
-        releaseType: "NCS" as const,
-        hasContentId: false,
-        streamingLink: "https://example.com/2",
-        license: ""
-      },
-      {
-        id: "song-3",
-        title: "Song 3",
-        albumName: "Album B",
-        releaseType: "Monstercat" as const,
-        hasContentId: true,
-        streamingLink: "https://example.com/3",
-        license: "All Rights Reserved"
-      }
-    ];
-    
-    const albums = await dataLoader.groupSongsByAlbum(testSongs);
-    
-    expect(albums).toHaveLength(2);
-    
-    const albumA = albums.find(a => a.name === "Album A");
-    const albumB = albums.find(a => a.name === "Album B");
-    
-    expect(albumA).toBeDefined();
-    expect(albumB).toBeDefined();
-    expect(albumA!.songs).toHaveLength(2);
-    expect(albumB!.songs).toHaveLength(1);
+  it('should reject album missing required fields', async () => {
+    const invalidJson = JSON.stringify([
+      { id: 'bad-album', title: 'Bad Album' /* missing required fields */ }
+    ]);
+
+    await expect(dataLoader.validateRawData(invalidJson))
+      .rejects.toThrow(DataLoaderError);
   });
 });
 
 describe('Convenience functions', () => {
   it('should load music data using convenience function', async () => {
     const musicData = await loadMusicData();
-    expect(musicData).toHaveProperty('songs');
-    expect(musicData).toHaveProperty('albums');
+    expect(Array.isArray(musicData)).toBe(true);
+    expect(musicData.length).toBeGreaterThan(0);
   });
 });

@@ -1,64 +1,39 @@
 /**
  * TypeScript interfaces for the music portfolio application.
- * These interfaces match the Rust structs and define the data structure
- * for songs, albums, and music data throughout the application.
+ * These interfaces match the Rust structs and define the album-first data structure.
  */
 
-/**
- * Release type classification for songs
- */
-export type ReleaseType = 'Independent' | 'NCS' | 'Monstercat';
-
-/**
- * Song interface representing a single music track
- */
-export interface Song {
-  /** Unique identifier for the song */
+export interface Track {
   id: string;
-  
-  /** Title of the song */
   title: string;
-  
-  /** Name of the album this song belongs to */
-  albumName: string;
-  
-  /** Type of release (Independent, NCS, or Monstercat) */
-  releaseType: ReleaseType;
-  
-  /** Whether the song has YouTube Content ID enabled */
-  hasContentId: boolean;
-  
-  /** URL to streaming platform for the song */
-  streamingLink: string;
-  
-  /** License information (can be empty string) */
   license: string;
-  
-  /** Year the song was released */
-  releaseYear: number;
-  
-  /** Album artwork URL (optional) */
-  albumArtwork?: string;
+  overrideStreamLink?: string;
 }
 
-/**
- * Album interface representing a collection of songs
- */
 export interface Album {
-  /** Name of the album */
-  name: string;
-  
-  /** Array of songs in this album */
-  songs: Song[];
+  id: string;
+  title: string;
+  releaseYear: number;
+  streamLink: string;
+  hasContentId: boolean;
+  releaseLabel?: string;
+  albumArtwork: string;
+  tracks: Track[];
 }
 
-/**
- * Main music data structure containing all songs and albums
- */
-export interface MusicData {
-  /** Array of all songs in the portfolio */
-  songs: Song[];
-  
-  /** Array of albums (derived from songs grouped by album name) */
-  albums: Album[];
+// MusicData is just Album[]
+export type MusicData = Album[];
+
+// Flattened view of a track with its parent album context
+export interface SongView {
+  id: string;
+  title: string;
+  license: string;
+  streamLink: string;       // resolved: overrideStreamLink ?? album.streamLink
+  albumId: string;
+  albumTitle: string;
+  releaseYear: number;
+  hasContentId: boolean;
+  releaseLabel?: string;
+  albumArtwork: string;
 }

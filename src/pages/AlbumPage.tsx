@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { DataLoader } from '../utils/dataLoader';
-import type { MusicData, Song } from '../types/music';
+import type { MusicData, Album, Track } from '../types/music';
 
 const AlbumPage: React.FC = () => {
   const { albumId } = useParams<{ albumId: string }>();
-  const [musicData, setMusicData] = useState<MusicData | null>(null);
+  const [albums, setAlbums] = useState<MusicData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -14,36 +14,25 @@ const AlbumPage: React.FC = () => {
       try {
         const dataLoader = DataLoader.getInstance();
         const data = await dataLoader.loadMusicData();
-        setMusicData(data);
+        setAlbums(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load music data');
       } finally {
         setLoading(false);
       }
     };
-
     loadData();
   }, []);
-
-  const createAlbumId = (albumName: string) => {
-    return albumName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-  };
-
-  const createSongId = (songTitle: string) => {
-    return songTitle.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-  };
 
   if (loading) {
     return (
       <div className="page album-page">
-        <div className="loading-container">
-          <p>Loading album...</p>
-        </div>
+        <div className="loading-container"><p>Loading album...</p></div>
       </div>
     );
   }
 
-  if (error || !musicData) {
+  if (error || !albums) {
     return (
       <div className="page album-page">
         <div className="error-container">
@@ -54,25 +43,13 @@ const AlbumPage: React.FC = () => {
     );
   }
 
-  // Find the album by ID
-  const album = musicData.albums.find(a => createAlbumId(a.name) === albumId);
+  const album = albums.find(a => a.id === albumId);
+  if (!album) return <Navigate to="/music/discography" replace />;
 
-  if (!album) {
-    return <Navigate to="/music/discography" replace />;
-  }
-
-  // Sort songs by title
-  const sortedSongs = [...album.songs].sort((a, b) => a.title.localeCompare(b.title));
-
-  const getAlbumYear = () => {
-    const years = album.songs.map(song => song.releaseYear);
-    return Math.min(...years);
-  };
-
-  const isCreatorFriendly = (song: Song) => {
-    return song.releaseType === 'NCS' || 
-           song.license.toLowerCase().includes('cc') || 
-           song.license === 'BGML-P';
+  const isCreatorFriendly = (track: Track) => {
+    const l = (track.license || '').toLowerCase().trim();
+    return /^cc by( \d+\.\d+)?$/.test(l) || /^cc by-sa( \d+\.\d+)?$/.test(l) ||
+           /^cc0( \d+\.\d+)?$/.test(l) || l === 'bgml-p';
   };
 
   return (
@@ -83,96 +60,56 @@ const AlbumPage: React.FC = () => {
           <span className="breadcrumb-separator">→</span>
           <Link to="/music/discography" className="breadcrumb-link">Discography</Link>
           <span className="breadcrumb-separator">→</span>
-          <span className="breadcrumb-current">{album.name}</span>
+          <span className="breadcrumb-current">{album.title}</span>
         </div>
-        
+
         <div className="album-header">
-          {album.songs[0]?.albumArtwork && (
+          {album.albumArtwork && (
             <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-              <img 
-                src={album.songs[0].albumArtwork} 
-                alt={`${album.name} album artwork`}
-                style={{
-                  width: '200px',
-                  height: '200px',
-                  borderRadius: '20px',
-                  objectFit: 'cover',
-                  boxShadow: '0 20px 40px rgba(0, 0, 0, 0.4)',
-                  marginBottom: '1rem'
-                }}
+              <img
+                src={album.albumArtwork}
+                alt={`${album.title} album artwork`}
+                style={{ width: '200px', height: '200px', borderRadius: '20px', objectFit: 'cover' }}
                 loading="lazy"
               />
             </div>
           )}
-          <h1 className="album-title">{album.name}</h1>
+          <h1 className="album-title">{album.title}</h1>
           <div className="album-meta">
-            <span className="album-year">{getAlbumYear()}</span>
-            <span className="album-count">{album.songs.length} songs</span>
-          </div>
-          <div className="album-labels">
-            {Array.from(new Set(album.songs.map(song => song.releaseType))).map(label => (
-              <span key={label} className={`label label-${label.toLowerCase()}`}>
-                {label}
-              </span>
-            ))}
+            <span className="album-year">{album.releaseYear}</span>
+            <span className="album-count">{album.tracks.length} tracks</span>
+            {album.releaseLabel && <span className="album-label">{album.releaseLabel}</span>}
           </div>
         </div>
       </div>
-      
+
       <div className="songs-list">
-        {sortedSongs.map((song, index) => {
-          const songId = createSongId(song.title);
-          
+        {album.tracks.map((track, index) => {
+          const streamLink = track.overrideStreamLink ?? album.streamLink;
           return (
-            <div key={song.id} className="song-item">
+            <div key={track.id} className="song-item">
               <div className="song-content">
-                {song.albumArtwork && (
-                  <img 
-                    src={song.albumArtwork} 
-                    alt={`${song.albumName} album artwork`}
-                    className="album-artwork"
-                    loading="lazy"
-                  />
-                )}
-                <div className="song-number">
-                  {String(index + 1).padStart(2, '0')}
-                </div>
+                <div className="song-number">{String(index + 1).padStart(2, '0')}</div>
                 <div className="song-info">
                   <h3 className="song-title">
-                    <Link to={`/music/s/${songId}`} className="song-link">
-                      {song.title}
-                    </Link>
+                    <Link to={`/music/s/${track.id}`} className="song-link">{track.title}</Link>
                   </h3>
                   <div className="song-meta">
-                    <span className="song-year">{song.releaseYear}</span>
-                    <span className={`label label-${song.releaseType.toLowerCase()}`}>
-                      {song.releaseType}
-                    </span>
-                    {isCreatorFriendly(song) && (
+                    {isCreatorFriendly(track) && (
                       <span className="label label-creator-friendly">Creator Friendly</span>
                     )}
-                    {song.hasContentId && (
+                    {album.hasContentId && (
                       <span className="label label-content-id">Content ID</span>
                     )}
                   </div>
-                  {song.license && (
-                    <div className="song-license">
-                      License: {song.license}
-                    </div>
+                  {track.license && (
+                    <div className="song-license">License: {track.license}</div>
                   )}
                 </div>
                 <div className="song-actions">
-                  <a 
-                    href={song.streamingLink} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="btn btn-secondary btn-small"
-                  >
-                    Listen
-                  </a>
-                  <Link to={`/music/s/${songId}`} className="btn btn-primary btn-small">
-                    Details
-                  </Link>
+                  <a href={streamLink} target="_blank" rel="noopener noreferrer"
+                     className="btn btn-secondary btn-small">Listen</a>
+                  <Link to={`/music/s/${track.id}`} className="btn btn-primary btn-small">Details</Link>
                 </div>
               </div>
             </div>
