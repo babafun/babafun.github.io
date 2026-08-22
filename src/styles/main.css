@@ -322,7 +322,7 @@ a:focus {
   margin: 0 auto;
   color: var(--text-muted);
   font-size: 1.2rem;
-  text-align: centre;
+  text-align: center;
   font-weight: 300;
 }
 
@@ -401,6 +401,7 @@ a:focus {
   background: rgba(var(--bg-light-rgb, 30, 25, 45), 0.8);
   border-color: var(--primary);
   color: var(--primary);
+  vertical-align: middle;
 }
 
 .btn-secondary:hover {
@@ -549,22 +550,22 @@ a:focus {
   border: 0;
 }
 
-.text-centre { text-align: centre; }
+.text-centre { text-align: center; }
 .text-muted { color: var(--text-muted); }
 
 /* Loading States */
 .loading-container {
   display: flex;
-  justify-content: centre;
-  align-items: centre;
+  justify-content: center;
+  align-items: center;
   min-height: 200px;
   color: var(--text-muted);
 }
 
 .error-container {
   display: flex;
-  justify-content: centre;
-  align-items: centre;
+  justify-content: center;
+  align-items: center;
   min-height: 200px;
   padding: 2rem;
 }

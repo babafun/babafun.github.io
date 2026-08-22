@@ -22,89 +22,30 @@ const LicensesPage: React.FC = () => {
             Browse Creator-Friendly Songs
           </Link>
         </div>
-        
-        <div className="license-types">
-          <div className="license-type">
-            <h3>Creative Commons (CC)</h3>
-            <div className="license-variants">
-              <div className="license-variant">
-                <h4>CC BY 4.0</h4>
-                <p>Use freely with attribution - perfect for content creation</p>
-              </div>
-              <div className="license-variant">
-                <h4>CC BY-SA 4.0</h4>
-                <p>Use with attribution, share derivatives under same license</p>
-              </div>
-              <div className="license-variant">
-                <h4>CC0</h4>
-                <p>Public domain - no attribution required</p>
-              </div>
-            </div>
-          </div>
+        <br/>
           
           <div className="license-type">
-            <h3>NCS (No Copyright Sounds)</h3>
+            <h3>BGML-P</h3>
             <p>
-              Tracks released through NCS are free for content creators to use. 
-              Perfect for YouTube videos, streams, and other content.
-            </p>
-          </div>
-          
-          <div className="license-type">
-            <h3>BGML-P (Babafun Game Music License - Permissive)</h3>
-            <p>
-              Specially designed for game developers and content creators. 
-              Free to use in games and interactive media.
-            </p>
-          </div>
-          
-          <div className="license-type">
-            <h3>All Rights Reserved</h3>
-            <p>
-              Traditional copyright protection. Contact for licensing inquiries.
+              This is <i>meant</i> to be a licence, but I haven't exactly been bothered to write it. For now, treat it as "All Rights Reserved" with the sole exception that these songs may be used commercially in YouTube videos, YouTube Shorts/TikToks, or in Twitch streams, so long as they are not the main focus of the video. If you are unsure, DM me via <a href="https://soundcloud.com/babafun">SoundCloud</a>.
             </p>
           </div>
         </div>
         
         <div className="content-id-info">
-          <h2>About Content ID</h2>
+          <h3>About Content ID</h3>
           <p>
             Some tracks have YouTube Content ID enabled. This means:
           </p>
           <ul>
             <li>The track may be automatically detected in videos</li>
-            <li>Monetization may be affected depending on the license</li>
+            <li>Monetisation may be affected depending on the license</li>
             <li>Creator-friendly tracks with Content ID are still free to use</li>
             <li>Check individual song pages for specific details</li>
           </ul>
         </div>
-        
-        <div className="usage-guidelines">
-          <h2>Usage Guidelines</h2>
-          <div className="guidelines-grid">
-            <div className="guideline">
-              <h3>✅ Allowed</h3>
-              <ul>
-                <li>YouTube videos and streams</li>
-                <li>Podcasts and audio content</li>
-                <li>Game development (with appropriate licenses)</li>
-                <li>Educational content</li>
-                <li>Personal projects</li>
-              </ul>
-            </div>
-            <div className="guideline">
-              <h3>❓ Check License</h3>
-              <ul>
-                <li>Commercial use</li>
-                <li>Redistribution</li>
-                <li>Remixing and derivatives</li>
-                <li>Sync licensing for media</li>
-              </ul>
-            </div>
-          </div>
-        </div>
       </div>
-    </div>
+
   );
 };
 
