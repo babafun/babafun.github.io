@@ -1,32 +1,20 @@
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
-import wasm from 'vite-plugin-wasm';
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), wasm()],
-  base: process.env.GITHUB_ACTIONS ? '/blog-website/' : '/', // GitHub Pages subdirectory or local root
+  plugins: [react()],
+  base: '/', // Use root path - adjust if deploying to subdirectory
   build: {
     outDir: 'dist',
     sourcemap: false,
-    minify: 'terser', // Aggressive minification
+    minify: 'terser',
     terserOptions: {
       compress: {
-        drop_console: true, // Remove console.log in production
+        drop_console: true,
         drop_debugger: true,
       },
     },
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom'],
-          'wasm-core': ['./src/wasm/bindings'],
-        },
-      },
-    },
-  },
-  optimizeDeps: {
-    exclude: ['./src/wasm/bindings'], // Don't pre-bundle WASM
   },
   test: {
     globals: true,
