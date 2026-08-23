@@ -12,10 +12,10 @@ const CodePage: React.FC = () => {
       
       <div className="coming-soon">
         <div className="coming-soon-content">
-          <h2>(will be added soon)</h2>
+          <br/>
+          <h2>coming soon</h2>
           <p>
-            This section will showcase my game development projects, 
-            programming tools, and open-source contributions.
+            This section will showcase cool code that I've made. Currently that doesn't exist, so just check out <a href="https://github.com/babafun">my repositories</a>!
           </p>
           <div className="preview-items">
             <div className="preview-item">

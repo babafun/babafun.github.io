@@ -30,7 +30,6 @@ export async function demoSingletonUsage() {
   const loader2 = DataLoader.getInstance();
 
   console.log('DataLoader is singleton:', loader1 === loader2);
-  console.log('WASM ready:', loader1.isWasmReady());
 
   return loader1;
 }

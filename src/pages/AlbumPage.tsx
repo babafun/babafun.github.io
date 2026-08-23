@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { DataLoader } from '../utils/dataLoader';
-import type { MusicData, Album, Track } from '../types/music';
+import type { MusicData, Track } from '../types/music';
 
 const AlbumPage: React.FC = () => {
   const { albumId } = useParams<{ albumId: string }>();

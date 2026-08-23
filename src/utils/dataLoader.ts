@@ -1,12 +1,11 @@
 /**
- * TypeScript Data Loader (WASM Wrapper)
+ * TypeScript Data Loader
  *
- * Loads and validates music data using the Rust/WASM backend.
+ * Loads and validates music data using pure JavaScript.
  * The data format is an album-first top-level array (Album[]).
  */
 
 import type { Album, MusicData } from '../types/music';
-import { initWasmAsync, validateMusicData } from '../wasm/bindings';
 
 /**
  * Error thrown when data loading or validation fails.
@@ -19,7 +18,7 @@ export class DataLoaderError extends Error {
 }
 
 /**
- * JavaScript fallback: validates that data is an array of albums.
+ * Validates that data is an array of albums.
  * Returns an error string if invalid, empty string if valid.
  */
 function validateMusicDataJS(data: unknown): string {
@@ -57,7 +56,7 @@ function validateMusicDataJS(data: unknown): string {
 }
 
 /**
- * JavaScript fallback: validates a single album object.
+ * Validates a single album object.
  */
 function validateAlbumJS(album: any): string {
   if (!album || typeof album !== 'object') {
@@ -88,7 +87,7 @@ function validateAlbumJS(album: any): string {
 }
 
 /**
- * JavaScript fallback: validates a single track object.
+ * Validates a single track object.
  */
 function validateTrackJS(track: any): string {
   if (!track || typeof track !== 'object') return 'Track must be an object';
@@ -100,11 +99,9 @@ function validateTrackJS(track: any): string {
 
 /**
  * DataLoader class for loading and processing music data.
- * Uses Rust/WASM for validation; falls back to JavaScript when WASM is unavailable.
  */
 export class DataLoader {
   private static instance: DataLoader | null = null;
-  private wasmInitialized = false;
 
   public static getInstance(): DataLoader {
     if (!DataLoader.instance) {
@@ -115,30 +112,16 @@ export class DataLoader {
 
   private constructor() {}
 
-  private async ensureWasmInitialized(): Promise<void> {
-    if (!this.wasmInitialized) {
-      try {
-        await initWasmAsync();
-        this.wasmInitialized = true;
-      } catch (error) {
-        console.warn('WASM initialization failed, using JavaScript fallbacks:', error);
-        this.wasmInitialized = false;
-      }
-    }
-  }
-
   /**
    * Loads and validates music data from a JSON file.
    * Expects the file to contain a top-level array of Album objects.
    *
-   * @param jsonPath - Path to the JSON file (defaults to '/src/data/music.json')
+   * @param jsonPath - Path to the JSON file (defaults to '/data/music.json')
    * @returns Promise<Album[]> - Validated album array
    * @throws DataLoaderError if loading or validation fails
    */
-  public async loadMusicData(jsonPath: string = '/src/data/music.json'): Promise<MusicData> {
+  public async loadMusicData(jsonPath: string = '/data/music.json'): Promise<MusicData> {
     try {
-      await this.ensureWasmInitialized();
-
       const response = await fetch(jsonPath);
       if (!response.ok) {
         throw new DataLoaderError(
@@ -159,17 +142,8 @@ export class DataLoader {
         );
       }
 
-      // Validate using WASM or JS fallback
-      let validationError = '';
-      try {
-        if (this.wasmInitialized) {
-          validationError = validateMusicData(jsonText);
-        } else {
-          validationError = validateMusicDataJS(rawData);
-        }
-      } catch {
-        validationError = validateMusicDataJS(rawData);
-      }
+      // Validate
+      const validationError = validateMusicDataJS(rawData);
 
       if (validationError) {
         throw new DataLoaderError(`Data validation failed: ${validationError}`);
@@ -194,8 +168,6 @@ export class DataLoader {
    */
   public async validateRawData(jsonText: string): Promise<boolean> {
     try {
-      await this.ensureWasmInitialized();
-
       let rawData: unknown;
       try {
         rawData = JSON.parse(jsonText);
@@ -206,16 +178,7 @@ export class DataLoader {
         );
       }
 
-      let validationError = '';
-      try {
-        if (this.wasmInitialized) {
-          validationError = validateMusicData(jsonText);
-        } else {
-          validationError = validateMusicDataJS(rawData);
-        }
-      } catch {
-        validationError = validateMusicDataJS(rawData);
-      }
+      const validationError = validateMusicDataJS(rawData);
 
       if (validationError) {
         throw new DataLoaderError(`Validation failed: ${validationError}`);
@@ -229,13 +192,6 @@ export class DataLoader {
         error instanceof Error ? error : new Error(String(error))
       );
     }
-  }
-
-  /**
-   * Check if WASM module is initialized.
-   */
-  public isWasmReady(): boolean {
-    return this.wasmInitialized;
   }
 }
 
