@@ -71,7 +71,7 @@ const SongPage: React.FC = () => {
       'CC BY-SA 4.0': 'Creative Commons Attribution-ShareAlike - Use with attribution, share derivatives under same license',
       'CC0 1.0': 'Public Domain - No rights reserved, use freely without attribution',
       'CC0': 'Public Domain - No rights reserved, use freely without attribution',
-      'BGML-P': 'Babafun Game Music License (Permissive) - Free for game development and content creation',
+      'BGML-P': 'Babafun Game Music License (Permissive) - Free for content creation and for explicitly allowed games (we can discuss the details) - check LICENCES for more details.',
       'All Rights Reserved': 'Traditional copyright - Contact for licensing'
     };
     return descriptions[license] || license;
